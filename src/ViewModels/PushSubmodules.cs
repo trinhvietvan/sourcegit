@@ -1,0 +1,82 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SourceGit.ViewModels
+{
+    public class PushSubmodules : Popup
+    {
+        public List<Models.Submodule> Submodules
+        {
+            get;
+        }
+
+        public bool PushAllTags
+        {
+            get;
+            set;
+        } = false;
+
+        public bool ForcePush
+        {
+            get;
+            set;
+        } = false;
+
+        public PushSubmodules(Repository repo)
+        {
+            _repo = repo;
+            Submodules = repo.Submodules.FindAll(x => x.Status != Models.SubmoduleStatus.NotInited);
+            CanTerminate = true;
+        }
+
+        public override async Task<bool> Sure()
+        {
+            using var lockWatcher = _repo.LockWatcher();
+
+            var log = _repo.CreateLog("Push Submodules");
+            Use(log);
+
+            _cancellation = new CancellationTokenSource();
+            var token = _cancellation.Token;
+
+            foreach (var submodule in Submodules)
+            {
+                if (token.IsCancellationRequested)
+                    break;
+
+                var fullpath = Path.GetFullPath(Path.Combine(_repo.FullPath, submodule.Path));
+                var info = await SubmoduleTrackingInfo.QueryAsync(fullpath);
+                if (info.Local == null)
+                {
+                    log.AppendLine($"Skipped '{submodule.Path}': {info.SkipReason}\n");
+                    continue;
+                }
+
+                if (info.Local.Ahead.Count == 0 && !PushAllTags)
+                {
+                    log.AppendLine($"Skipped '{submodule.Path}': nothing to push\n");
+                    continue;
+                }
+
+                var push = new Commands.Push(fullpath, info.Local, info.Remote, info.Upstream, PushAllTags, false, false, ForcePush, false);
+                push.Context = _repo.FullPath;
+                await push.WithCancellation(token).Use(log).ExecAsync();
+            }
+
+            log.Complete();
+            _repo.MarkSubmodulesDirtyManually();
+            _cancellation = null;
+            return true;
+        }
+
+        public override void Terminate()
+        {
+            var _ = _cancellation?.CancelAsync();
+        }
+
+        private readonly Repository _repo = null;
+        private CancellationTokenSource _cancellation = null;
+    }
+}

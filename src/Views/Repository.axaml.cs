@@ -475,6 +475,60 @@ namespace SourceGit.Views
             e.Handled = true;
         }
 
+        private void OnOpenSubmoduleGroupMenu(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && DataContext is ViewModels.Repository repo)
+            {
+                var pullAll = new MenuItem();
+                pullAll.Header = App.Text("Repository.Submodules.PullAll");
+                pullAll.Icon = this.CreateMenuIcon("Icons.Pull");
+                pullAll.Click += (_, ev) =>
+                {
+                    repo.PullSubmodules();
+                    ev.Handled = true;
+                };
+
+                var pushAll = new MenuItem();
+                pushAll.Header = App.Text("Repository.Submodules.PushAll");
+                pushAll.Icon = this.CreateMenuIcon("Icons.Push");
+                pushAll.Click += (_, ev) =>
+                {
+                    repo.PushSubmodules();
+                    ev.Handled = true;
+                };
+
+                var update = new MenuItem();
+                update.Header = App.Text("Repository.Submodules.Update");
+                update.Icon = this.CreateMenuIcon("Icons.Loading");
+                update.Click += (_, ev) =>
+                {
+                    repo.UpdateSubmodules();
+                    ev.Handled = true;
+                };
+
+                var showAsTree = new MenuItem();
+                showAsTree.Header = App.Text("Repository.ShowSubmodulesAsTree");
+                if (repo.ShowSubmodulesAsTree)
+                    showAsTree.Icon = this.CreateMenuIcon("Icons.Check");
+                showAsTree.Click += (_, ev) =>
+                {
+                    repo.ShowSubmodulesAsTree = !repo.ShowSubmodulesAsTree;
+                    ev.Handled = true;
+                };
+
+                var menu = new ContextMenu();
+                menu.Placement = PlacementMode.BottomEdgeAlignedLeft;
+                menu.Items.Add(pullAll);
+                menu.Items.Add(pushAll);
+                menu.Items.Add(update);
+                menu.Items.Add(new MenuItem() { Header = "-" });
+                menu.Items.Add(showAsTree);
+                menu.Open(button);
+            }
+
+            e.Handled = true;
+        }
+
         private async void OnPruneWorktrees(object sender, RoutedEventArgs e)
         {
             if (DataContext is ViewModels.Repository repo)

@@ -747,6 +747,8 @@
   <x:String x:Key="Text.Pull.Remote" xml:space="preserve">Remote:</x:String>
   <x:String x:Key="Text.Pull.Title" xml:space="preserve">Pull (Fetch &amp; Merge)</x:String>
   <x:String x:Key="Text.Pull.UseRebase" xml:space="preserve">Use rebase instead of merge</x:String>
+  <x:String x:Key="Text.PullSubmodules" xml:space="preserve">Pull All Submodules</x:String>
+  <x:String x:Key="Text.PullSubmodules.Tip" xml:space="preserve">Pull the current branch of each initialized submodule from its upstream. Submodules with detached HEAD, no upstream or local changes will be skipped.</x:String>
   <x:String x:Key="Text.Push" xml:space="preserve">Push</x:String>
   <x:String x:Key="Text.Push.CheckSubmodules" xml:space="preserve">Make sure submodules have been pushed</x:String>
   <x:String x:Key="Text.Push.Force" xml:space="preserve">Force push</x:String>
@@ -760,6 +762,8 @@
   <x:String x:Key="Text.Push.To" xml:space="preserve">Remote Branch:</x:String>
   <x:String x:Key="Text.Push.Tracking" xml:space="preserve">Set as tracking branch</x:String>
   <x:String x:Key="Text.Push.WithAllTags" xml:space="preserve">Push all tags</x:String>
+  <x:String x:Key="Text.PushSubmodules" xml:space="preserve">Push All Submodules</x:String>
+  <x:String x:Key="Text.PushSubmodules.Tip" xml:space="preserve">Push the current branch of each initialized submodule to its upstream. Submodules with detached HEAD, no upstream or nothing to push will be skipped.</x:String>
   <x:String x:Key="Text.PushTag" xml:space="preserve">Push Tag To Remote</x:String>
   <x:String x:Key="Text.PushTag.PushAllRemotes" xml:space="preserve">Push to all remotes</x:String>
   <x:String x:Key="Text.PushTag.Remote" xml:space="preserve">Remote:</x:String>
@@ -828,6 +832,7 @@
   <x:String x:Key="Text.Repository.HistoriesOrder.ByDate" xml:space="preserve">Commit Date</x:String>
   <x:String x:Key="Text.Repository.HistoriesOrder.Topo" xml:space="preserve">Topologically</x:String>
   <x:String x:Key="Text.Repository.LocalBranches" xml:space="preserve">LOCAL BRANCHES</x:String>
+  <x:String x:Key="Text.Repository.MoreActions" xml:space="preserve">More Actions</x:String>
   <x:String x:Key="Text.Repository.NavigateToCurrentHead" xml:space="preserve">Navigate to HEAD</x:String>
   <x:String x:Key="Text.Repository.NewBranch" xml:space="preserve">Create Branch</x:String>
   <x:String x:Key="Text.Repository.Notifications.Clear" xml:space="preserve">CLEAR NOTIFICATIONS</x:String>
@@ -856,6 +861,8 @@
   <x:String x:Key="Text.Repository.Statistics" xml:space="preserve">Statistics</x:String>
   <x:String x:Key="Text.Repository.Submodules" xml:space="preserve">SUBMODULES</x:String>
   <x:String x:Key="Text.Repository.Submodules.Add" xml:space="preserve">Add Submodule</x:String>
+  <x:String x:Key="Text.Repository.Submodules.PullAll" xml:space="preserve">Pull All Submodules</x:String>
+  <x:String x:Key="Text.Repository.Submodules.PushAll" xml:space="preserve">Push All Submodules</x:String>
   <x:String x:Key="Text.Repository.Submodules.Update" xml:space="preserve">Update Submodule</x:String>
   <x:String x:Key="Text.Repository.Tags" xml:space="preserve">TAGS</x:String>
   <x:String x:Key="Text.Repository.Tags.Add" xml:space="preserve">Create Tag</x:String>

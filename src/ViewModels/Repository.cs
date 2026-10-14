@@ -1513,6 +1513,18 @@ namespace SourceGit.ViewModels
                 ShowPopup(new UpdateSubmodules(this, null));
         }
 
+        public void PullSubmodules()
+        {
+            if (CanCreatePopup())
+                ShowPopup(new PullSubmodules(this));
+        }
+
+        public void PushSubmodules()
+        {
+            if (CanCreatePopup())
+                ShowPopup(new PushSubmodules(this));
+        }
+
         public async Task AutoUpdateSubmodulesAsync(Models.ICommandLog log)
         {
             var submodules = await new Commands.QueryUpdatableSubmodules(FullPath, false).GetResultAsync();
