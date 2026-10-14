@@ -421,6 +421,32 @@ namespace SourceGit.Views
         private void OnGitInstallPathChanged(object sender, TextChangedEventArgs e)
         {
             UpdateGitVersion();
+            ViewModels.EmbeddedGit.Instance.Refresh();
+        }
+
+        private async void OnUseEmbeddedGit(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            await ViewModels.EmbeddedGit.Instance.UseEmbeddedGitAsync();
+            UpdateGitVersion();
+        }
+
+        private async void OnUseSystemGit(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (!ViewModels.EmbeddedGit.Instance.UseSystemGit())
+            {
+                await new Alert().ShowAsync(this, App.Text("Preferences.Git.Embedded.SystemGitNotFound"), true);
+                return;
+            }
+
+            UpdateGitVersion();
+        }
+
+        private void OnCancelEmbeddedGit(object sender, RoutedEventArgs e)
+        {
+            ViewModels.EmbeddedGit.Instance.Cancel();
+            e.Handled = true;
         }
 
         private void OnAddOpenAIService(object sender, RoutedEventArgs e)

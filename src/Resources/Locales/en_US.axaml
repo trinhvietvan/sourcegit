@@ -712,6 +712,17 @@
   <x:String x:Key="Text.Preferences.Git.DefaultCloneDir" xml:space="preserve">Default Clone Dir</x:String>
   <x:String x:Key="Text.Preferences.Git.Email" xml:space="preserve">User Email</x:String>
   <x:String x:Key="Text.Preferences.Git.Email.Placeholder" xml:space="preserve">Global git user email</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.Canceled" xml:space="preserve">Canceled.</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.Checking" xml:space="preserve">Checking the latest Git for Windows release ...</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.Downloading" xml:space="preserve">Downloading PortableGit {0} ...</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.Extracting" xml:space="preserve">Extracting ...</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.Failed" xml:space="preserve">Failed: {0}</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.Installed" xml:space="preserve">PortableGit {0} installed and selected.</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.SystemGitNotFound" xml:space="preserve">Git is not found on this system. Please install Git for Windows, or add git to the PATH environment variable.</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.UpToDate" xml:space="preserve">Already up to date ({0}).</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.UpdateCheckFailed" xml:space="preserve">Using the installed PortableGit {0}. Could not check for updates: {1}</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.UseEmbedded" xml:space="preserve">Use Embedded Git</x:String>
+  <x:String x:Key="Text.Preferences.Git.Embedded.UseSystem" xml:space="preserve">System Git</x:String>
   <x:String x:Key="Text.Preferences.Git.EnablePruneOnFetch" xml:space="preserve">Prune dead branches after fetching</x:String>
   <x:String x:Key="Text.Preferences.Git.IgnoreCRAtEOLInDiff" xml:space="preserve">Ignore CR at end-of-line in text diff</x:String>
   <x:String x:Key="Text.Preferences.Git.Invalid" xml:space="preserve">Git (&gt;= 2.25.1) is required by this app</x:String>
@@ -721,7 +732,7 @@
   <x:String x:Key="Text.Preferences.Git.User" xml:space="preserve">User Name</x:String>
   <x:String x:Key="Text.Preferences.Git.User.Placeholder" xml:space="preserve">Global git user name</x:String>
   <x:String x:Key="Text.Preferences.Git.UseStashAndReapplyByDefault" xml:space="preserve">Stash &amp; reapply changes by default when checking-out or merging branches</x:String>
-  <x:String x:Key="Text.Preferences.Git.Version" xml:space="preserve">Git version</x:String>
+  <x:String x:Key="Text.Preferences.Git.Version" xml:space="preserve">Git Version</x:String>
   <x:String x:Key="Text.Preferences.GPG" xml:space="preserve">GPG SIGNING</x:String>
   <x:String x:Key="Text.Preferences.GPG.CommitEnabled" xml:space="preserve">Commit GPG signing</x:String>
   <x:String x:Key="Text.Preferences.GPG.Format" xml:space="preserve">GPG Format</x:String>

@@ -24,6 +24,7 @@ namespace SourceGit.ViewModels
 
                 _instance.PrepareGit();
                 _instance.PrepareShellOrTerminal();
+                _instance.SyncGitBashWithGit();
                 _instance.PrepareExternalDiffMergeTool();
                 _instance.PrepareWorkspaces();
 
@@ -316,6 +317,7 @@ namespace SourceGit.ViewModels
                 {
                     Native.OS.GitExecutable = value;
                     OnPropertyChanged();
+                    SyncGitBashWithGit();
                 }
             }
         }
@@ -665,6 +667,22 @@ namespace SourceGit.ViewModels
             var path = Native.OS.GitExecutable;
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
                 GitInstallPath = Native.OS.FindGitExecutable();
+        }
+
+        private void SyncGitBashWithGit()
+        {
+            // `Git Bash` lives next to the selected git, so keep it in sync when git changes (e.g. switching to embedded git).
+            if (_isLoading || _shellOrTerminalType < 0 || _shellOrTerminalType >= Models.ShellOrTerminal.Supported.Count)
+                return;
+
+            var shell = Models.ShellOrTerminal.Supported[_shellOrTerminalType];
+            if (shell.Type != "git-bash" || !Native.OS.TestShellOrTerminal(shell))
+                return;
+
+            var args = Native.OS.ShellOrTerminalArgs;
+            Native.OS.SetShellOrTerminal(shell);
+            Native.OS.ShellOrTerminalArgs = args;
+            OnPropertyChanged(nameof(ShellOrTerminalPath));
         }
 
         private void PrepareShellOrTerminal()
