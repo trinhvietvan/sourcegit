@@ -438,10 +438,20 @@ namespace SourceGit.Views
             e.Handled = true;
         }
 
-        private void OnOpenSortTagMenu(object sender, RoutedEventArgs e)
+        private void OnOpenTagGroupMenu(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && DataContext is ViewModels.Repository repo)
             {
+                var showAsTree = new MenuItem();
+                showAsTree.Header = App.Text("Repository.ShowTagsAsTree");
+                if (repo.ShowTagsAsTree)
+                    showAsTree.Icon = this.CreateMenuIcon("Icons.Check");
+                showAsTree.Click += (_, ev) =>
+                {
+                    repo.ShowTagsAsTree = !repo.ShowTagsAsTree;
+                    ev.Handled = true;
+                };
+
                 var isSortByName = repo.IsSortingTagsByName;
                 var byCreatorDate = new MenuItem();
                 byCreatorDate.Header = App.Text("Repository.Tags.OrderByCreatorDate");
@@ -465,10 +475,17 @@ namespace SourceGit.Views
                     ev.Handled = true;
                 };
 
+                var sort = new MenuItem();
+                sort.Header = App.Text("Repository.Tags.Sort");
+                sort.Icon = this.CreateMenuIcon(isSortByName ? "Icons.OrderByName" : "Icons.OrderByTime");
+                sort.Items.Add(byName);
+                sort.Items.Add(byCreatorDate);
+
                 var menu = new ContextMenu();
                 menu.Placement = PlacementMode.BottomEdgeAlignedLeft;
-                menu.Items.Add(byName);
-                menu.Items.Add(byCreatorDate);
+                menu.Items.Add(showAsTree);
+                menu.Items.Add(new MenuItem() { Header = "-" });
+                menu.Items.Add(sort);
                 menu.Open(button);
             }
 
