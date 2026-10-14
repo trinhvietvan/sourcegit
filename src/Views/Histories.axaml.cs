@@ -562,6 +562,17 @@ namespace SourceGit.Views
             showFlags.Header = new TextBlock() { Text = App.Text("Repository.ShowFlags"), FontWeight = FontWeight.Bold };
             showFlags.IsEnabled = false;
 
+            var showCurrentBranchOnly = new MenuItem();
+            showCurrentBranchOnly.Header = App.Text("Repository.ShowCurrentBranchOnly");
+            showCurrentBranchOnly.Tag = "HEAD";
+            if (histories.HasShowFlag(Models.HistoryShowFlags.CurrentBranchOnly))
+                showCurrentBranchOnly.Icon = this.CreateMenuIcon("Icons.Check");
+            showCurrentBranchOnly.Click += (_, ev) =>
+            {
+                histories.ToggleShowFlag(Models.HistoryShowFlags.CurrentBranchOnly);
+                ev.Handled = true;
+            };
+
             var reflog = new MenuItem();
             reflog.Header = App.Text("Repository.ShowLostCommits");
             reflog.Tag = "--reflog";
@@ -726,6 +737,7 @@ namespace SourceGit.Views
             menu.Items.Add(vertical);
             menu.Items.Add(new MenuItem() { Header = "-" });
             menu.Items.Add(showFlags);
+            menu.Items.Add(showCurrentBranchOnly);
             menu.Items.Add(reflog);
             menu.Items.Add(firstParentOnly);
             menu.Items.Add(simplifyByDecoration);

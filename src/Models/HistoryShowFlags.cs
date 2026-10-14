@@ -9,5 +9,6 @@ namespace SourceGit.Models
         Reflog = 1 << 0,
         FirstParentOnly = 1 << 1,
         SimplifyByDecoration = 1 << 2,
+        CurrentBranchOnly = 1 << 3,
     }
 }

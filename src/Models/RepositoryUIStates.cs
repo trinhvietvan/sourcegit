@@ -400,7 +400,7 @@ namespace SourceGit.Models
                 HistoryFilters.Remove(filter);
         }
 
-        public string BuildHistoryParams(string gitDir)
+        public string BuildHistoryParams(string gitDir, string currentUpstream)
         {
             var builder = new StringBuilder();
 
@@ -417,6 +417,15 @@ namespace SourceGit.Models
 
             if (HistoryShowFlags.HasFlag(HistoryShowFlags.SimplifyByDecoration))
                 builder.Append("--simplify-by-decoration ");
+
+            // Only show commits reachable from HEAD (and its upstream). Branch/tag filters are ignored in this mode.
+            if (HistoryShowFlags.HasFlag(HistoryShowFlags.CurrentBranchOnly))
+            {
+                builder.Append("HEAD");
+                if (!string.IsNullOrEmpty(currentUpstream))
+                    builder.Append(' ').Append(currentUpstream);
+                return builder.ToString();
+            }
 
             var mode = GetHistoryFilterMode();
             if (mode == FilterMode.None)
