@@ -1,0 +1,52 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project
+
+SourceGit is a cross-platform (Windows/macOS/Linux) Git GUI client written in C# on .NET 10 + Avalonia 11 (MVVM via CommunityToolkit.Mvvm). It shells out to the user's installed `git` (>= 2.25.1) for all repository operations — there is no libgit2.
+
+## Commands
+
+```sh
+git submodule update --init          # required: depends/AvaloniaEdit is a custom fork, referenced as a ProjectReference
+dotnet build                         # builds SourceGit.slnx (app + AvaloniaEdit)
+dotnet run --project src/SourceGit.csproj
+dotnet format --verify-no-changes src/SourceGit.csproj   # CI format gate; drop --verify-no-changes to fix
+dotnet publish src/SourceGit.csproj -c Release -r <rid> -o <dir>   # rid: win-x64, win-arm64, linux-x64, linux-arm64, osx-x64, osx-arm64
+```
+
+- Release builds use **NativeAOT + full trimming** (`PublishAot`, `TrimMode=link`). Pass `-p:DisableAOT=true` to skip. `-p:DisableUpdateDetection=true` defines `DISABLE_UPDATE_DETECTION`.
+- There is no test project. Verify changes by building and running the app.
+- Localization check (CI runs it on `develop`; it also re-sorts locale files and regenerates `TRANSLATION.md`): `node build/scripts/localization-check.js` (needs `fs-extra`, `path`, `xml2js`).
+- Interactive translation helper: `python translate_helper.py <lang_id> [--check]`.
+- PRs target the `develop` branch, not `master`.
+
+## Architecture
+
+All app code lives in `src/` under the `SourceGit` namespace, split by folder:
+
+- **`Commands/`** — one class per git operation, each subclassing `Commands.Command` (`Command.cs`). A command sets `WorkingDirectory`, `Context` (repo path, used to route error notifications), `Args` (everything after `git`), and optionally `SSHKey`/`Editor`/`RaiseError`. Mutating commands call `ExecAsync()`; query commands (`Query*`) call `ReadToEndAsync()` and parse stdout in a `GetResultAsync()`. `CreateGitStartInfo` injects `--no-pager -c core.quotepath=off`, the credential helper, `core.editor`, and forces `LANG=C` on Unix so output is parseable — keep git invocations going through this class. Errors are surfaced via `Models.Notification.Send(Context, ...)` rather than exceptions.
+- **`Models/`** — plain data types (Branch, Commit, Change, Remote...), parsers, settings (`RepositorySettings`, `RepositoryUIStates`), `Watcher` (filesystem watcher that triggers `IRepository.Refresh*` calls).
+- **`ViewModels/`** — `ObservableObject`-based VMs. Key ones:
+  - `Launcher` → tabs of `LauncherPage` → each page hosts a `Repository` (or `Welcome`) and an optional `Popup`.
+  - `Repository` is the central per-repo state (branches, tags, commits, working copy, settings, watcher). Operations that mutate the repo typically wrap work in `using var _ = _repo.LockWatcher();` so the file watcher doesn't refresh mid-operation, then call the appropriate `Refresh*`.
+  - `Preferences` — global settings singleton, serialized to `preference.json`.
+- **`Views/`** — Avalonia `.axaml` + code-behind. **ViewModel→View resolution is by naming convention**: `ControlExtensions.CreateFromViewModels` replaces `.ViewModels.` with `.Views.` in the type name (e.g. `ViewModels.Fetch` → `Views.Fetch`). A new popup/command palette/window VM needs a same-named View.
+- **`Native/`** — `OS` static facade over per-platform `IBackend` (`Windows.cs`, `MacOS.cs`, `Linux.cs`): git executable discovery, data directories, external editors/merge tools, terminal, file manager.
+- **`AI/`** — OpenAI/Azure OpenAI client used to generate commit messages (OpenAI-compatible endpoints).
+- **`Resources/`** — `Locales/*.axaml` (string resources), `Themes.axaml`, `Icons.axaml` (StreamGeometry icons), `Styles.axaml`, TextMate grammars, fonts.
+
+### Popup pattern (most user actions)
+
+Most dialogs are a `ViewModels.Popup` subclass (extends `ObservableValidator`, so validation attributes work) plus a matching `Views/<Name>.axaml`. The VM exposes bindable properties and overrides `Task<bool> Sure()` to run the git command(s); return `true` to close. Typical body: `LockWatcher()`, `var log = _repo.CreateLog("..."); Use(log);`, run `new Commands.X(...).Use(log).ExecAsync()`, `log.Complete()`. Set `CanTerminate = true` and override `Terminate()` for cancellable ops. Show with `repo.ShowPopup(...)` / `ShowAndStartPopupAsync(...)` (check `repo.CanCreatePopup()` first). `LauncherPage.ProcessPopupAsync` drives `Check()` → `Sure()`.
+
+### Multi-mode executable (`App.axaml.cs`)
+
+The same binary is re-invoked by git as helper programs, selected by args/env before normal startup: `--rebase-todo-editor` / `--rebase-message-editor` (interactive rebase), `--core-editor`, SSH askpass (`SOURCEGIT_LAUNCH_AS_ASKPASS` env), plus user-facing `--history <path>` and `--blame <file>`. `Command.CreateGitStartInfo` wires these up via `-c core.editor=...`, `sequence.editor`, and `SSH_ASKPASS`.
+
+## Conventions and gotchas
+
+- **AOT/trim safety**: JSON serialization uses the source-generated context in `App.JsonCodeGen.cs`. Any new type persisted to/loaded from JSON must be added there as `[JsonSerializable(typeof(...))]`. Avoid reflection-heavy APIs. Avalonia compiled bindings are on by default (`x:DataType` required in axaml).
+- **Localization**: UI strings are `x:String` resources keyed `Text.*` in `src/Resources/Locales/en_US.axaml` (the reference locale). Use `{DynamicResource Text.Foo}` in axaml and `App.Text("Foo", args...)` in C# (the `Text.` prefix is added automatically). Add new keys to `en_US.axaml`; other locales may lag and are tracked in `TRANSLATION.md`.
+- Code style is enforced by `.editorconfig` + `dotnet format` in CI: Allman braces, 4-space indent, private fields `_camelCase` declared at the bottom of the class.
