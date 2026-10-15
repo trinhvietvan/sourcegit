@@ -37,6 +37,39 @@ namespace SourceGit.Views
             set => SetAndRaise(ShowGitVersionWarningProperty, ref _showGitVersionWarning, value);
         }
 
+        public static readonly DirectProperty<Preferences, bool> IsGitInUserPathProperty =
+            AvaloniaProperty.RegisterDirect<Preferences, bool>(
+                nameof(IsGitInUserPath),
+                static o => o.IsGitInUserPath);
+
+        public bool IsGitInUserPath
+        {
+            get => _isGitInUserPath;
+            set => SetAndRaise(IsGitInUserPathProperty, ref _isGitInUserPath, value);
+        }
+
+        public static readonly DirectProperty<Preferences, bool> HasGitInPathConflictProperty =
+            AvaloniaProperty.RegisterDirect<Preferences, bool>(
+                nameof(HasGitInPathConflict),
+                static o => o.HasGitInPathConflict);
+
+        public bool HasGitInPathConflict
+        {
+            get => _hasGitInPathConflict;
+            set => SetAndRaise(HasGitInPathConflictProperty, ref _hasGitInPathConflict, value);
+        }
+
+        public static readonly DirectProperty<Preferences, string> GitInPathHintProperty =
+            AvaloniaProperty.RegisterDirect<Preferences, string>(
+                nameof(GitInPathHint),
+                static o => o.GitInPathHint);
+
+        public string GitInPathHint
+        {
+            get => _gitInPathHint;
+            set => SetAndRaise(GitInPathHintProperty, ref _gitInPathHint, value);
+        }
+
         public string DefaultUser
         {
             get;
@@ -290,8 +323,10 @@ namespace SourceGit.Views
                 var selected = await StorageProvider.OpenFilePickerAsync(options);
                 if (selected is { Count: 1 })
                 {
+                    var oldGit = Native.OS.GitExecutable;
                     ViewModels.Preferences.Instance.GitInstallPath = selected[0].Path.LocalPath;
                     UpdateGitVersion();
+                    await SyncUserPathAfterGitChangedAsync(oldGit);
                 }
             }
             catch (Exception ex)
@@ -449,13 +484,16 @@ namespace SourceGit.Views
         private async void OnUseEmbeddedGit(object sender, RoutedEventArgs e)
         {
             e.Handled = true;
+            var oldGit = Native.OS.GitExecutable;
             await ViewModels.EmbeddedGit.Instance.UseEmbeddedGitAsync();
             UpdateGitVersion();
+            await SyncUserPathAfterGitChangedAsync(oldGit);
         }
 
         private async void OnUseSystemGit(object sender, RoutedEventArgs e)
         {
             e.Handled = true;
+            var oldGit = Native.OS.GitExecutable;
             if (!ViewModels.EmbeddedGit.Instance.UseSystemGit())
             {
                 await new Alert().ShowAsync(this, App.Text("Preferences.Git.Embedded.SystemGitNotFound"), true);
@@ -463,6 +501,86 @@ namespace SourceGit.Views
             }
 
             UpdateGitVersion();
+            await SyncUserPathAfterGitChangedAsync(oldGit);
+        }
+
+        private async void OnAddGitToUserPath(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (!OperatingSystem.IsWindows())
+                return;
+
+            var dir = Native.WindowsUserPath.GetGitDir(Native.OS.GitExecutable);
+            if (string.IsNullOrEmpty(dir))
+            {
+                await new Alert().ShowAsync(this, App.Text("Preferences.Git.Invalid"), true);
+                return;
+            }
+
+            try
+            {
+                Native.WindowsUserPath.Add(dir);
+            }
+            catch (Exception ex)
+            {
+                await new Alert().ShowAsync(this, App.Text("Preferences.Git.UserPath.Error", ex.Message), true);
+            }
+
+            UpdateUserPathState();
+        }
+
+        private async void OnRemoveGitFromUserPath(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (!OperatingSystem.IsWindows())
+                return;
+
+            var dir = Native.WindowsUserPath.GetGitDir(Native.OS.GitExecutable);
+            if (string.IsNullOrEmpty(dir))
+                return;
+
+            try
+            {
+                Native.WindowsUserPath.Remove(dir);
+            }
+            catch (Exception ex)
+            {
+                await new Alert().ShowAsync(this, App.Text("Preferences.Git.UserPath.Error", ex.Message), true);
+            }
+
+            UpdateUserPathState();
+        }
+
+        private async Task SyncUserPathAfterGitChangedAsync(string oldGit)
+        {
+            // Offer to replace the previous git in the user's PATH, so PATH does not keep pointing to a git that is no longer used.
+            if (!OperatingSystem.IsWindows())
+                return;
+
+            var oldDir = Native.WindowsUserPath.GetGitDir(oldGit);
+            var newDir = Native.WindowsUserPath.GetGitDir(Native.OS.GitExecutable);
+            if (string.IsNullOrEmpty(oldDir) ||
+                Native.WindowsUserPath.IsSameDir(oldDir, newDir) ||
+                !Native.WindowsUserPath.Contains(oldDir))
+                return;
+
+            var confirm = new Confirm();
+            confirm.SetData(App.Text("Preferences.Git.UserPath.Replace", oldDir, newDir ?? "-"), Models.ConfirmButtonType.YesNo);
+            if (!await confirm.ShowDialog<bool>(this))
+                return;
+
+            try
+            {
+                Native.WindowsUserPath.Remove(oldDir);
+                if (!string.IsNullOrEmpty(newDir))
+                    Native.WindowsUserPath.Add(newDir);
+            }
+            catch (Exception ex)
+            {
+                await new Alert().ShowAsync(this, App.Text("Preferences.Git.UserPath.Error", ex.Message), true);
+            }
+
+            UpdateUserPathState();
         }
 
         private void OnCancelEmbeddedGit(object sender, RoutedEventArgs e)
@@ -776,10 +894,38 @@ namespace SourceGit.Views
         {
             GitVersion = Native.OS.GitVersionString;
             ShowGitVersionWarning = !string.IsNullOrEmpty(GitVersion) && Native.OS.GitVersion < Models.GitVersions.MINIMAL;
+            UpdateUserPathState();
+        }
+
+        private void UpdateUserPathState()
+        {
+            if (!OperatingSystem.IsWindows())
+                return;
+
+            try
+            {
+                var dir = Native.WindowsUserPath.GetGitDir(Native.OS.GitExecutable);
+                IsGitInUserPath = !string.IsNullOrEmpty(dir) && Native.WindowsUserPath.Contains(dir);
+
+                var resolved = Native.WindowsUserPath.ResolveGit();
+                HasGitInPathConflict = IsGitInUserPath && !Native.WindowsUserPath.IsSameDir(Path.GetDirectoryName(resolved), dir);
+                GitInPathHint = string.IsNullOrEmpty(resolved) ?
+                    App.Text("Preferences.Git.UserPath.NotFound") :
+                    App.Text(HasGitInPathConflict ? "Preferences.Git.UserPath.Conflict" : "Preferences.Git.UserPath.Resolved", resolved);
+            }
+            catch
+            {
+                IsGitInUserPath = false;
+                HasGitInPathConflict = false;
+                GitInPathHint = string.Empty;
+            }
         }
 
         private string _gitVersion = string.Empty;
         private bool _showGitVersionWarning = false;
+        private bool _isGitInUserPath = false;
+        private bool _hasGitInPathConflict = false;
+        private string _gitInPathHint = string.Empty;
         private Models.GPGFormat _gpgFormat = Models.GPGFormat.Supported[0];
         private string _gpgExecutableFile = string.Empty;
         private AI.Service _selectedOpenAIService = null;

@@ -77,6 +77,17 @@ Code: `ViewModels/PullSubmodules.cs`, `ViewModels/PushSubmodules.cs`, `ViewModel
   hide/skip work); `Force push` does not bypass this check.
 - [ ] Pull mode (merge/rebase) is shared with the parent repo's `PreferRebaseInsteadOfMerge` UI state.
 
+## Add git to user PATH (Windows)
+
+Code: `Native/WindowsUserPath.cs`, `Views/Preferences.axaml(.cs)` (`UpdateUserPathState`, `SyncUserPathAfterGitChangedAsync`).
+
+- [ ] Only the user `Path` (`HKCU`) is supported. New processes get the system `Path` first, so a git in the system
+  `Path` (e.g. SourceTree's `...\SourceTree\git_local\cmd` on this machine) still wins; the UI only warns about it.
+  Writing the system `Path` needs an elevated helper (e.g. re-run `SourceGit.exe --set-machine-path` with `runas`).
+- [ ] Only offered to replace the old entry when git is changed by the buttons/file picker, not when the path is typed
+  into the `Git Path` text box.
+- [ ] SourceGit itself keeps the `PATH` it was started with (no effect on the running app).
+
 ## Verification
 
 - [ ] No UI test has been done for any of the above (there is no test project): only `dotnet build` and

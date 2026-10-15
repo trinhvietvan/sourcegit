@@ -112,6 +112,11 @@ namespace SourceGit.ViewModels
                 return true;
 
             var system = Native.OS.FindGitExecutable();
+
+            // The embedded git can be found in PATH too (e.g. it was added to the user's PATH), skip it.
+            if (!string.IsNullOrEmpty(system) && IsInInstallDir(system))
+                system = FindGitOnPathOutsideInstallDir();
+
             if (string.IsNullOrEmpty(system) || !File.Exists(system))
                 return false;
 
@@ -234,6 +239,32 @@ namespace SourceGit.ViewModels
         public void Cancel()
         {
             _cancellation?.Cancel();
+        }
+
+        private bool IsInInstallDir(string file)
+        {
+            var dir = Path.GetFullPath(InstallDir).TrimEnd('\\') + "\\";
+            return Path.GetFullPath(file).StartsWith(dir, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private string FindGitOnPathOutsideInstallDir()
+        {
+            var paths = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+            foreach (var entry in paths.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                try
+                {
+                    var file = Path.Combine(Environment.ExpandEnvironmentVariables(entry.Trim('"')), "git.exe");
+                    if (File.Exists(file) && !IsInInstallDir(file))
+                        return file;
+                }
+                catch
+                {
+                    // Ignore invalid entries
+                }
+            }
+
+            return null;
         }
 
         private void UseInstalled()
