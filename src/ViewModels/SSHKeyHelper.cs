@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -30,25 +28,11 @@ namespace SourceGit.ViewModels
         {
             Keys = new AvaloniaList<Models.SSHKeyPair>();
 
-            var sshDir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh"));
-            if (sshDir.Exists)
+            var keys = Models.SSHKeyPair.ScanUserKeys();
+            if (keys.Count > 0)
             {
-                var files = sshDir.GetFiles("*.pub");
-                var keys = new List<Models.SSHKeyPair>();
-
-                foreach (var file in files)
-                {
-                    var privateKeyPath = file.FullName.Substring(0, file.FullName.Length - 4);
-                    if (File.Exists(privateKeyPath))
-                        keys.Add(new(privateKeyPath, file.FullName));
-                }
-
-                if (keys.Count > 0)
-                {
-                    keys.Sort((l, r) => l.Name.CompareTo(r.Name));
-                    Keys.AddRange(keys);
-                    SelectedKey = keys[0];
-                }
+                Keys.AddRange(keys);
+                SelectedKey = keys[0];
             }
         }
 

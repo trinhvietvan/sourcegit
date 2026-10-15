@@ -35,6 +35,14 @@ namespace SourceGit.Models
         public string PrivateSSHKey { get; set; }
         public bool DisableAutoFetch { get; set; }
 
+        // SSH key of the hosting account that matches this remote's host. Only used when `PrivateSSHKey` is not set.
+        public string AccountSSHKey { get; set; }
+
+        public string SSHKeyToUse
+        {
+            get => string.IsNullOrEmpty(PrivateSSHKey) ? AccountSSHKey : PrivateSSHKey;
+        }
+
         public static bool IsSSH(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
@@ -44,6 +52,48 @@ namespace SourceGit.Models
                 return true;
 
             return REG_SSH2().IsMatch(url);
+        }
+
+        public static bool TryGetHost(string url, out string host)
+        {
+            if (TryGetSSHHost(url, out host))
+                return true;
+
+            host = null;
+            if (string.IsNullOrWhiteSpace(url) ||
+                !url.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
+                !Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                return false;
+
+            host = uri.Host;
+            return !string.IsNullOrEmpty(host);
+        }
+
+        public static bool TryGetSSHHost(string url, out string host)
+        {
+            host = null;
+            if (!IsSSH(url))
+                return false;
+
+            if (url.StartsWith("ssh://", StringComparison.Ordinal))
+            {
+                if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                    return false;
+
+                host = uri.Host;
+            }
+            else
+            {
+                // scp-like syntax: `user@host:path` (port is not supported by this syntax)
+                var at = url.IndexOf('@');
+                var colon = url.IndexOf(':', at + 1);
+                if (at < 0 || colon < 0)
+                    return false;
+
+                host = url.Substring(at + 1, colon - at - 1);
+            }
+
+            return !string.IsNullOrEmpty(host);
         }
 
         public static bool IsValidURL(string url)

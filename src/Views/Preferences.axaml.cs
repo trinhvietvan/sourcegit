@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -117,6 +121,18 @@ namespace SourceGit.Views
             set => SetAndRaise(SelectedOpenAIServiceProperty, ref _selectedOpenAIService, value);
         }
 
+        public static readonly DirectProperty<Preferences, Models.HostingAccount> SelectedHostingAccountProperty =
+            AvaloniaProperty.RegisterDirect<Preferences, Models.HostingAccount>(
+                nameof(SelectedHostingAccount),
+                static o => o.SelectedHostingAccount,
+                static (o, v) => o.SelectedHostingAccount = v);
+
+        public Models.HostingAccount SelectedHostingAccount
+        {
+            get => _selectedHostingAccount;
+            set => SetAndRaise(SelectedHostingAccountProperty, ref _selectedHostingAccount, value);
+        }
+
         public static readonly DirectProperty<Preferences, Models.CustomAction> SelectedCustomActionProperty =
             AvaloniaProperty.RegisterDirect<Preferences, Models.CustomAction>(
                 nameof(SelectedCustomAction),
@@ -129,11 +145,17 @@ namespace SourceGit.Views
             set => SetAndRaise(SelectedCustomActionProperty, ref _selectedCustomAction, value);
         }
 
+        public AvaloniaList<string> AvailableSSHKeys
+        {
+            get;
+        } = [];
+
         public Preferences()
         {
             var pref = ViewModels.Preferences.Instance;
             DataContext = pref;
             CloseOnESC = true;
+            RefreshAvailableSSHKeys();
 
             if (pref.IsGitConfigured())
             {
@@ -468,6 +490,214 @@ namespace SourceGit.Views
             e.Handled = true;
         }
 
+        private async void OnAddHostingAccount(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            var vm = new ViewModels.AddHostingAccount(null);
+            await this.ShowDialogAsync(vm);
+            if (vm.Result != null)
+                SelectedHostingAccount = vm.Result;
+        }
+
+        private async void OnUpdateHostingAccountToken(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (sender is not Button { DataContext: Models.HostingAccount account })
+                return;
+
+            var vm = new ViewModels.AddHostingAccount(account);
+            await this.ShowDialogAsync(vm);
+            if (vm.Result != null)
+                SelectedHostingAccount = vm.Result;
+        }
+
+        private async void OnSelectHostingAccountSSHKey(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (sender is not Button { DataContext: Models.HostingAccount account })
+                return;
+
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var startupDir = Path.Combine(home, ".ssh");
+            if (!Directory.Exists(startupDir))
+                startupDir = home;
+
+            var options = new FilePickerOpenOptions()
+            {
+                AllowMultiple = false,
+                FileTypeFilter = [new("SSHKey") { Patterns = ["*"] }],
+                SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(startupDir),
+            };
+
+            try
+            {
+                var selected = await StorageProvider.OpenFilePickerAsync(options);
+                if (selected is not { Count: 1 })
+                    return;
+
+                var path = selected[0].Path.LocalPath;
+                if (path.EndsWith(".pub", StringComparison.OrdinalIgnoreCase))
+                    path = path.Substring(0, path.Length - 4);
+
+                if (!File.Exists(path) || !File.Exists(path + ".pub"))
+                {
+                    await new Alert().ShowAsync(this, App.Text("Preferences.Accounts.SSHKey.Error.NoPair", path), true);
+                    return;
+                }
+
+                if (!AvailableSSHKeys.Contains(path))
+                    AvailableSSHKeys.Add(path);
+
+                account.SSHKey = path;
+                ViewModels.Preferences.Instance.Save();
+            }
+            catch (Exception ex)
+            {
+                await new Alert().ShowAsync(this, $"Failed to select SSH key: {ex.Message}", true);
+            }
+        }
+
+        private void OnClearHostingAccountSSHKey(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (sender is not Button { DataContext: Models.HostingAccount account })
+                return;
+
+            account.SSHKey = string.Empty;
+            ViewModels.Preferences.Instance.Save();
+        }
+
+        private async void OnUploadHostingAccountSSHKey(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (sender is not Button { DataContext: Models.HostingAccount account } button)
+                return;
+
+            var publicKeyFile = account.SSHKey + ".pub";
+            if (!File.Exists(publicKeyFile))
+            {
+                await new Alert().ShowAsync(this, App.Text("Preferences.Accounts.SSHKey.Error.NoPair", account.SSHKey), true);
+                return;
+            }
+
+            button.IsEnabled = false;
+            try
+            {
+                var token = await new Commands.Credential(account.Host, account.Username).FillAsync();
+                if (string.IsNullOrEmpty(token))
+                {
+                    await new Alert().ShowAsync(this, App.Text("Preferences.Accounts.SSHKey.Error.NoToken"), true);
+                    return;
+                }
+
+                var publicKey = (await File.ReadAllTextAsync(publicKeyFile)).Trim();
+                var title = $"SourceGit ({Environment.MachineName})";
+                var rs = await Models.HostingAPI.UploadSSHKeyAsync(account, token, title, publicKey);
+                var msg = rs == Models.UploadSSHKeyResult.AlreadyExists ?
+                    App.Text("Preferences.Accounts.SSHKey.AlreadyExists", account.ProviderName) :
+                    App.Text("Preferences.Accounts.SSHKey.Uploaded", account.ProviderName);
+                await new Alert().ShowAsync(this, msg, false);
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.NotFound)
+            {
+                var provider = Models.HostingProvider.Get(account.Provider);
+                await new Alert().ShowAsync(this, App.Text("Preferences.Accounts.SSHKey.Error.Scope", provider.SSHKeyScopes, ex.Message), true);
+            }
+            catch (Exception ex)
+            {
+                await new Alert().ShowAsync(this, App.Text("Preferences.Accounts.SSHKey.Error.Upload", ex.Message), true);
+            }
+            finally
+            {
+                button.IsEnabled = true;
+            }
+        }
+
+        private async void OnOpenSSHKeyHelper(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            var before = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var key in Models.SSHKeyPair.ScanUserKeys())
+                before.Add(key.PrivateKeyPath);
+
+            await new SSHKeyHelper() { DataContext = new ViewModels.SSHKeyHelper() }.ShowDialog(this);
+
+            // Pick the newest key generated in the helper for the account it was opened from.
+            string generated = null;
+            var generatedTime = DateTime.MinValue;
+            foreach (var key in Models.SSHKeyPair.ScanUserKeys())
+            {
+                if (before.Contains(key.PrivateKeyPath))
+                    continue;
+
+                var time = File.GetLastWriteTimeUtc(key.PrivateKeyPath);
+                if (generated == null || time > generatedTime)
+                {
+                    generated = key.PrivateKeyPath;
+                    generatedTime = time;
+                }
+            }
+
+            RefreshAvailableSSHKeys();
+
+            if (generated != null && sender is Button { DataContext: Models.HostingAccount account })
+            {
+                account.SSHKey = generated;
+                ViewModels.Preferences.Instance.Save();
+            }
+        }
+
+        private void RefreshAvailableSSHKeys()
+        {
+            // Keys used by accounts are kept even if they are not in `~/.ssh`. The list is updated in place (instead of
+            // being replaced) so that the selection of the ComboBox is never reset.
+            var paths = new List<string>();
+            foreach (var key in Models.SSHKeyPair.ScanUserKeys())
+                paths.Add(key.PrivateKeyPath);
+
+            foreach (var account in ViewModels.Preferences.Instance.HostingAccounts)
+            {
+                if (!string.IsNullOrEmpty(account.SSHKey) && !paths.Contains(account.SSHKey))
+                    paths.Add(account.SSHKey);
+            }
+
+            for (var i = AvailableSSHKeys.Count - 1; i >= 0; i--)
+            {
+                if (!paths.Contains(AvailableSSHKeys[i]))
+                    AvailableSSHKeys.RemoveAt(i);
+            }
+
+            foreach (var path in paths)
+            {
+                if (!AvailableSSHKeys.Contains(path))
+                    AvailableSSHKeys.Add(path);
+            }
+        }
+
+        private async void OnRemoveSelectedHostingAccount(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            var account = SelectedHostingAccount;
+            if (account == null)
+                return;
+
+            var confirm = new Confirm();
+            confirm.SetData(App.Text("Preferences.Accounts.ConfirmRemove", account.Description), Models.ConfirmButtonType.YesNo);
+            if (!await confirm.ShowDialog<bool>(this))
+                return;
+
+            // Erase the token from the credential helper too, so it can not be used by git anymore.
+            await new Commands.Credential(account.Host, account.Username).RejectAsync();
+
+            var pref = ViewModels.Preferences.Instance;
+            pref.HostingAccounts.Remove(account);
+            pref.Save();
+            SelectedHostingAccount = null;
+        }
+
         private void OnAddCustomAction(object sender, RoutedEventArgs e)
         {
             var action = new Models.CustomAction() { Name = "Unnamed Action (Global)" };
@@ -553,6 +783,7 @@ namespace SourceGit.Views
         private Models.GPGFormat _gpgFormat = Models.GPGFormat.Supported[0];
         private string _gpgExecutableFile = string.Empty;
         private AI.Service _selectedOpenAIService = null;
+        private Models.HostingAccount _selectedHostingAccount = null;
         private Models.CustomAction _selectedCustomAction = null;
     }
 }

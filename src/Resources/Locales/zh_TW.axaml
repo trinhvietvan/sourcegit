@@ -921,14 +921,14 @@
   <x:String x:Key="Text.SSHKeyHelper.ConfirmDeletion" xml:space="preserve">您確定要刪除以下的金鑰嗎?</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Fingerprint" xml:space="preserve">指紋</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator" xml:space="preserve">產生 SSH 金鑰</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">再次輸入您的密碼:</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">電子郵件:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">再次輸入您的密碼</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">電子郵件</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Email.Placeholder" xml:space="preserve">必填。</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">金鑰名稱:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">金鑰名稱</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Name.Placeholder" xml:space="preserve">必填，例如: id_github</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">輸入您的密碼:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">輸入您的密碼</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Start" xml:space="preserve">產  生</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">類型:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">類型</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.UsePassphrase" xml:space="preserve">為私密金鑰檔案設定密碼</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Path" xml:space="preserve">路徑</x:String>
   <x:String x:Key="Text.SSHKeyHelper.PublicKey" xml:space="preserve">公開金鑰</x:String>

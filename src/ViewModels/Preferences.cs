@@ -470,6 +470,12 @@ namespace SourceGit.ViewModels
             set;
         } = [];
 
+        public AvaloniaList<Models.HostingAccount> HostingAccounts
+        {
+            get;
+            set;
+        } = [];
+
         public double LastCheckUpdateTime
         {
             get => _lastCheckUpdateTime;
@@ -612,6 +618,29 @@ namespace SourceGit.ViewModels
         public void AutoRemoveInvalidNode()
         {
             RemoveInvalidRepositoriesRecursive(RepositoryNodes);
+        }
+
+        public string FindAccountSSHKey(string url)
+        {
+            if (!Models.Remote.TryGetSSHHost(url, out var host))
+                return null;
+
+            // Only use it when there is exactly one account with SSH key for this host, otherwise it is ambiguous.
+            string found = null;
+            foreach (var account in HostingAccounts)
+            {
+                if (!account.Host.Equals(host, StringComparison.OrdinalIgnoreCase) ||
+                    string.IsNullOrEmpty(account.SSHKey) ||
+                    !File.Exists(account.SSHKey))
+                    continue;
+
+                if (found != null)
+                    return null;
+
+                found = account.SSHKey;
+            }
+
+            return found;
         }
 
         public void UpdateAvailableAIModels()

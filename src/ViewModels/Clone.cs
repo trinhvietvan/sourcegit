@@ -19,7 +19,13 @@ namespace SourceGit.ViewModels
             set
             {
                 if (SetProperty(ref _remote, value, true))
+                {
                     UseSSH = Models.Remote.IsSSH(value);
+                    Account.SetURL(value, true);
+
+                    if (UseSSH && string.IsNullOrEmpty(_sshKey) && !string.IsNullOrEmpty(Account.Selected?.SSHKey))
+                        SSHKey = Account.Selected.SSHKey;
+                }
             }
         }
 
@@ -34,6 +40,11 @@ namespace SourceGit.ViewModels
             get => _sshKey;
             set => SetProperty(ref _sshKey, value);
         }
+
+        public AccountSelector Account
+        {
+            get;
+        } = new();
 
         [Required(ErrorMessage = "Parent folder is required")]
         [CustomValidation(typeof(Clone), nameof(ValidateParentFolder))]
@@ -88,6 +99,11 @@ namespace SourceGit.ViewModels
         {
             _pageId = pageId;
             CanTerminate = true;
+            Account.AccountChanged += account =>
+            {
+                if (_useSSH && !string.IsNullOrEmpty(account?.SSHKey))
+                    SSHKey = account.SSHKey;
+            };
 
             Groups = new List<TargetGroup>();
             Groups.Add(new TargetGroup(string.Empty, "Auto", "Based-on Default Clone Dir"));
@@ -126,7 +142,8 @@ namespace SourceGit.ViewModels
             _cancellation = new CancellationTokenSource();
             var token = _cancellation.Token;
 
-            var succ = await new Commands.Clone(_pageId, _parentFolder, _remote, _local, _useSSH ? _sshKey : "", _extraArgs)
+            var extraArgs = Account.GetCloneConfigArgs(_useSSH) + _extraArgs;
+            var succ = await new Commands.Clone(_pageId, _parentFolder, _remote, _local, _useSSH ? _sshKey : "", extraArgs)
                 .WithCancellation(token)
                 .Use(log)
                 .ExecAsync();
@@ -161,6 +178,8 @@ namespace SourceGit.ViewModels
                     .Use(log)
                     .SetAsync("remote.origin.sshkey", _sshKey);
             }
+
+            await Account.ApplyAsync(path, _useSSH, log);
 
             if (InitAndUpdateSubmodules && !token.IsCancellationRequested)
             {

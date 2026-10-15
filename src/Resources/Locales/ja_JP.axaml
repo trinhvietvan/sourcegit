@@ -911,14 +911,14 @@
   <x:String x:Key="Text.SSHKeyHelper.ConfirmDeletion" xml:space="preserve">これらの鍵を削除しますか？</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Fingerprint" xml:space="preserve">フィンガープリント</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator" xml:space="preserve">SSH 鍵を生成</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">パスフレーズを確認:</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">メールアドレス:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">パスフレーズを確認</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">メールアドレス</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Email.Placeholder" xml:space="preserve">必須</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">鍵の名前:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">鍵の名前</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Name.Placeholder" xml:space="preserve">必須 - 例: id_github</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">パスフレーズ:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">パスフレーズ</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Start" xml:space="preserve">生成</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">種類:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">種類</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.UsePassphrase" xml:space="preserve">秘密鍵にパスフレーズを使用</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Path" xml:space="preserve">パス</x:String>
   <x:String x:Key="Text.SSHKeyHelper.PublicKey" xml:space="preserve">公開鍵</x:String>

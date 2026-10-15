@@ -921,14 +921,14 @@
   <x:String x:Key="Text.SSHKeyHelper.ConfirmDeletion" xml:space="preserve">Вы действительно хотите удалить следующие ключи?</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Fingerprint" xml:space="preserve">Отпечаток</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator" xml:space="preserve">Создать SSH-ключ</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">Подтвердить парольную фразу:</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">Почта:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">Подтвердить парольную фразу</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">Почта</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Email.Placeholder" xml:space="preserve">Требуется.</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">Имя ключа:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">Имя ключа</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Name.Placeholder" xml:space="preserve">Требуется. К примеру: id_github</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">Парольная фраза:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">Парольная фраза</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Start" xml:space="preserve">СОЗДАТЬ</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">Тип:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">Тип</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.UsePassphrase" xml:space="preserve">Использовать парольную фразу для частного ключа</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Path" xml:space="preserve">Путь</x:String>
   <x:String x:Key="Text.SSHKeyHelper.PublicKey" xml:space="preserve">Открытый ключ</x:String>

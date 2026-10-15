@@ -921,14 +921,14 @@
   <x:String x:Key="Text.SSHKeyHelper.ConfirmDeletion" xml:space="preserve">¿De verdad deseas borrar las siguientes claves?</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Fingerprint" xml:space="preserve">Fingerprint</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator" xml:space="preserve">Generar Clave SSH</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">Confirmar Contraseña:</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">Email:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">Confirmar Contraseña</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">Email</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Email.Placeholder" xml:space="preserve">Requerido.</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">Nombre de la Clave:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">Nombre de la Clave</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Name.Placeholder" xml:space="preserve">Requerido. Por ejemplo: id_github</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">Contraseña:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">Contraseña</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Start" xml:space="preserve">GENERAR</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">Tipo:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">Tipo</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.UsePassphrase" xml:space="preserve">Usar contraseña para la clave privada</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Path" xml:space="preserve">Ruta</x:String>
   <x:String x:Key="Text.SSHKeyHelper.PublicKey" xml:space="preserve">Clave Pública</x:String>

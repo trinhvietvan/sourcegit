@@ -8,7 +8,7 @@ namespace SourceGit.Commands
         {
             WorkingDirectory = repo;
             Context = repo;
-            SSHKey = remote.PrivateSSHKey;
+            SSHKey = remote.SSHKeyToUse;
 
             var builder = new StringBuilder(1024);
             builder.Append("push --progress --verbose ");
@@ -31,7 +31,7 @@ namespace SourceGit.Commands
         {
             WorkingDirectory = repo;
             Context = repo;
-            SSHKey = remote.PrivateSSHKey;
+            SSHKey = remote.SSHKeyToUse;
 
             var builder = new StringBuilder(1024);
             builder.Append("push --progress --verbose ");
@@ -46,7 +46,7 @@ namespace SourceGit.Commands
         {
             WorkingDirectory = repo;
             Context = repo;
-            SSHKey = remote.PrivateSSHKey;
+            SSHKey = remote.SSHKeyToUse;
 
             var builder = new StringBuilder(512);
             builder.Append("push ");

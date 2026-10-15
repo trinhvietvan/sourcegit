@@ -1143,6 +1143,9 @@ namespace SourceGit.ViewModels
             {
                 var branches = await new Commands.QueryBranches(FullPath).GetResultAsync().ConfigureAwait(false);
                 var remotes = await new Commands.QueryRemotes(FullPath).GetResultAsync().ConfigureAwait(false);
+                foreach (var remote in remotes)
+                    remote.AccountSSHKey = Preferences.Instance.FindAccountSSHKey(remote.URL);
+
                 var builder = BuildBranchTree(branches, remotes);
 
                 Dispatcher.UIThread.Invoke(() =>

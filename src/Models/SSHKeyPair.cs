@@ -21,6 +21,41 @@ namespace SourceGit.Models
         public string Fingerprint { get; set; } = "--- (invalid)";
         public string Name => Path.GetFileName(PrivateKeyPath);
 
+        public static string UserSSHDir
+        {
+            get => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
+        }
+
+        /// <summary>
+        ///     Finds all key pairs (`name` + `name.pub`) in `~/.ssh`, sorted by name.
+        /// </summary>
+        public static List<SSHKeyPair> ScanUserKeys()
+        {
+            var keys = new List<SSHKeyPair>();
+            var sshDir = new DirectoryInfo(UserSSHDir);
+            if (!sshDir.Exists)
+                return keys;
+
+            foreach (var file in sshDir.GetFiles("*.pub"))
+            {
+                var privateKeyPath = file.FullName.Substring(0, file.FullName.Length - 4);
+                if (!File.Exists(privateKeyPath))
+                    continue;
+
+                try
+                {
+                    keys.Add(new(privateKeyPath, file.FullName));
+                }
+                catch
+                {
+                    // Ignore unreadable keys
+                }
+            }
+
+            keys.Sort((l, r) => string.Compare(l.Name, r.Name, StringComparison.Ordinal));
+            return keys;
+        }
+
         public SSHKeyPair(string privateKey, string publicKey)
         {
             PrivateKeyPath = privateKey;

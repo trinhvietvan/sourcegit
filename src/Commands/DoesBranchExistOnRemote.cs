@@ -7,7 +7,7 @@ namespace SourceGit.Commands
         public DoesBranchExistOnRemote(string repo, Models.Remote remote, Models.Branch branch)
         {
             WorkingDirectory = repo;
-            SSHKey = remote.PrivateSSHKey;
+            SSHKey = remote.SSHKeyToUse;
             RaiseError = false;
             Args = $"ls-remote {remote.Name} {branch.Name}";
         }

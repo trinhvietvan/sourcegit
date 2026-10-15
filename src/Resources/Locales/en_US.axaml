@@ -4,6 +4,30 @@
   <x:String x:Key="Text.About.ReleaseDate" xml:space="preserve">Release Date: {0}</x:String>
   <x:String x:Key="Text.About.ReleaseNotes" xml:space="preserve">Release Notes</x:String>
   <x:String x:Key="Text.About.SubTitle" xml:space="preserve">Opensource &amp; Free Git GUI Client</x:String>
+  <x:String x:Key="Text.AccountSelector.Account" xml:space="preserve">Account</x:String>
+  <x:String x:Key="Text.AccountSelector.ApplyIdentity" xml:space="preserve">Use this account's name and email for commits in this repository</x:String>
+  <x:String x:Key="Text.AccountSelector.Clear" xml:space="preserve">Do not bind any account</x:String>
+  <x:String x:Key="Text.AccountSelector.Placeholder" xml:space="preserve">Automatic</x:String>
+  <x:String x:Key="Text.AddHostingAccount" xml:space="preserve">Add Account</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Browser" xml:space="preserve">Sign In</x:String>
+  <x:String x:Key="Text.AddHostingAccount.CreateToken" xml:space="preserve">Create Token</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Email" xml:space="preserve">Email</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Email.Placeholder" xml:space="preserve">Atlassian account email, used to verify the API token</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.Email" xml:space="preserve">Email is required</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.Host" xml:space="preserve">Invalid host</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.InvalidToken" xml:space="preserve">The token was rejected by {0}</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.NotStored" xml:space="preserve">The git credential helper did not save the token. Please check `credential.helper`. {0}</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.Query" xml:space="preserve">Failed to verify the token: {0}</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.SignIn" xml:space="preserve">Sign-in was cancelled or failed.</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.Token" xml:space="preserve">Token is required</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Error.UserMismatch" xml:space="preserve">This token belongs to '{1}', not '{0}'</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Host" xml:space="preserve">Host</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Provider" xml:space="preserve">Provider</x:String>
+  <x:String x:Key="Text.AddHostingAccount.SignInWithBrowser" xml:space="preserve">Use Browser (Git Credential Manager)</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Scopes" xml:space="preserve">Required scopes:</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Scopes.SSHKey" xml:space="preserve">To upload SSH keys, also:</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Tip" xml:space="preserve">The token is saved by git's credential helper (e.g. Git Credential Manager), never in SourceGit's preferences.</x:String>
+  <x:String x:Key="Text.AddHostingAccount.Token" xml:space="preserve">Token</x:String>
   <x:String x:Key="Text.AddToIgnore" xml:space="preserve">Add File(s) To Ignore</x:String>
   <x:String x:Key="Text.AddToIgnore.Pattern" xml:space="preserve">Pattern:</x:String>
   <x:String x:Key="Text.AddToIgnore.Storage" xml:space="preserve">Storage File:</x:String>
@@ -663,6 +687,23 @@
   <x:String x:Key="Text.Period.YearsAgo" xml:space="preserve">{0} years ago</x:String>
   <x:String x:Key="Text.Period.Yesterday" xml:space="preserve">Yesterday</x:String>
   <x:String x:Key="Text.Preferences" xml:space="preserve">Preferences</x:String>
+  <x:String x:Key="Text.Preferences.Accounts" xml:space="preserve">ACCOUNTS</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.ConfirmRemove" xml:space="preserve">Remove account '{0}' and erase its token from the git credential helper?</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.DisplayName" xml:space="preserve">Name</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey" xml:space="preserve">SSH Key</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.AlreadyExists" xml:space="preserve">This public key has already been added to your {0} account.</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Browse" xml:space="preserve">Select a key outside ~/.ssh</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Clear" xml:space="preserve">Do not use SSH key</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Error.NoPair" xml:space="preserve">Can NOT find the key pair: both '{0}' and '{0}.pub' are required.</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Error.NoToken" xml:space="preserve">No token of this account is found in the git credential helper. Please update the token first.</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Error.Scope" xml:space="preserve">The token is not allowed to add SSH keys. Please update it with scope: {0}&#10;{1}</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Error.Upload" xml:space="preserve">Failed to upload the public key: {0}</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Placeholder" xml:space="preserve">Select a private SSH key</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Tip" xml:space="preserve">Used by SSH remotes of this host that have no SSH key of their own (only when exactly one account of this host has an SSH key).</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Upload" xml:space="preserve">Upload Public Key</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.SSHKey.Uploaded" xml:space="preserve">The public key has been added to your {0} account.</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.UpdateToken" xml:space="preserve">Update Token</x:String>
+  <x:String x:Key="Text.Preferences.Accounts.Username" xml:space="preserve">Username</x:String>
   <x:String x:Key="Text.Preferences.AI" xml:space="preserve">AI</x:String>
   <x:String x:Key="Text.Preferences.AI.AdditionalPrompt" xml:space="preserve">Additional Prompt (Use `-` to list your requirements)</x:String>
   <x:String x:Key="Text.Preferences.AI.ApiKey" xml:space="preserve">API Key</x:String>
@@ -936,14 +977,14 @@
   <x:String x:Key="Text.SSHKeyHelper.ConfirmDeletion" xml:space="preserve">Do you really want to delete the following keys?</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Fingerprint" xml:space="preserve">Fingerprint</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator" xml:space="preserve">Generate SSH Key</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">Confirm Passphrase:</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">Email:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.ConfirmPassphrase" xml:space="preserve">Confirm Passphrase</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Email" xml:space="preserve">Email</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Email.Placeholder" xml:space="preserve">Required.</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">Key Name:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Name" xml:space="preserve">Key Name</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Name.Placeholder" xml:space="preserve">Required. For example: id_github</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">Passphrase:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Passphrase" xml:space="preserve">Passphrase</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.Start" xml:space="preserve">GENERATE</x:String>
-  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">Type:</x:String>
+  <x:String x:Key="Text.SSHKeyHelper.Generator.Type" xml:space="preserve">Type</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Generator.UsePassphrase" xml:space="preserve">Use passphrase for private key</x:String>
   <x:String x:Key="Text.SSHKeyHelper.Path" xml:space="preserve">Path</x:String>
   <x:String x:Key="Text.SSHKeyHelper.PublicKey" xml:space="preserve">Public Key</x:String>

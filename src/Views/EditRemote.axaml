@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:m="using:SourceGit.Models"
              xmlns:vm="using:SourceGit.ViewModels"
              xmlns:v="using:SourceGit.Views"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
@@ -18,7 +19,7 @@
                  Text="{DynamicResource Text.Remote.EditTitle}"/>
     </StackPanel>
 
-    <Grid Margin="0,16,0,0" RowDefinitions="32,32,Auto,Auto" ColumnDefinitions="150,*">
+    <Grid Margin="0,16,0,0" RowDefinitions="32,32,Auto,Auto,Auto,Auto" ColumnDefinitions="150,*">
       <TextBlock Grid.Row="0" Grid.Column="0"
                  HorizontalAlignment="Right" VerticalAlignment="Center"
                  Margin="0,0,8,0"
@@ -84,8 +85,48 @@
           </TextBox.InnerRightContent>
         </TextBox>
       </Border>
+      <TextBlock Grid.Row="3" Grid.Column="0"
+                 HorizontalAlignment="Right" VerticalAlignment="Center"
+                 Margin="0,0,8,0"
+                 Text="{DynamicResource Text.AccountSelector.Account}"
+                 IsVisible="{Binding Account.HasAccounts}"/>
+      <Grid Grid.Row="3" Grid.Column="1" Height="32" ColumnDefinitions="*,Auto" IsVisible="{Binding Account.HasAccounts}">
+        <ComboBox Grid.Column="0"
+                  Height="28" Padding="8,0"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                  PlaceholderText="{DynamicResource Text.AccountSelector.Placeholder}"
+                  ItemsSource="{Binding Account.Accounts}"
+                  SelectedItem="{Binding Account.Selected, Mode=TwoWay}">
+          <ComboBox.ItemTemplate>
+            <DataTemplate DataType="m:HostingAccount">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Name}"/>
+                <TextBlock Margin="8,0,0,0"
+                           Classes="small"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource Brush.FG2}"
+                           Text="{Binding Description}"/>
+              </StackPanel>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+        <Button Grid.Column="1"
+                Classes="icon_button"
+                Width="28" Height="28" Margin="4,0,0,0"
+                Command="{Binding Account.ClearSelection}"
+                IsEnabled="{Binding Account.Selected, Converter={x:Static ObjectConverters.IsNotNull}}"
+                ToolTip.Tip="{DynamicResource Text.AccountSelector.Clear}">
+          <Path Width="12" Height="12" Data="{StaticResource Icons.Clear}"/>
+        </Button>
+      </Grid>
+      <CheckBox Grid.Row="4" Grid.Column="1"
+                Height="32"
+                Content="{DynamicResource Text.AccountSelector.ApplyIdentity}"
+                IsChecked="{Binding Account.ApplyIdentity, Mode=TwoWay}"
+                IsVisible="{Binding Account.CanApplyIdentity}"/>
 
-      <CheckBox Grid.Row="3" Grid.Column="1"
+
+      <CheckBox Grid.Row="5" Grid.Column="1"
                 Height="32"
                 Content="{DynamicResource Text.Remote.ResetPushURL}"
                 IsChecked="{Binding ResetPushURL, Mode=TwoWay}"

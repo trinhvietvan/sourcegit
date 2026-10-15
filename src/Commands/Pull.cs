@@ -8,7 +8,7 @@ namespace SourceGit.Commands
         {
             WorkingDirectory = repo;
             Context = repo;
-            SSHKey = remote.PrivateSSHKey;
+            SSHKey = remote.SSHKeyToUse;
 
             var builder = new StringBuilder(512);
             builder
