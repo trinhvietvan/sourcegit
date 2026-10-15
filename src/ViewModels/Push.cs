@@ -249,15 +249,9 @@ namespace SourceGit.ViewModels
                 }
             }
 
-            // Fallback to select the first remote.
+            // Fallback to the remote currently worked with (upstream of the current branch, default remote, `origin`...).
             if (Remotes.Count > 0)
-            {
-                Models.Remote fallback = null;
-                if (!string.IsNullOrEmpty(_repo.Settings.DefaultRemote))
-                    fallback = Remotes.Find(x => x.Name.Equals(_repo.Settings.DefaultRemote, StringComparison.Ordinal));
-
-                ForceUpdateSelectedRemote(fallback ?? Remotes[0]);
-            }
+                ForceUpdateSelectedRemote(_repo.GetPreferredRemote() ?? Remotes[0]);
         }
 
         private void ForceUpdateSelectedRemote(Models.Remote remote)

@@ -650,6 +650,49 @@ namespace SourceGit.ViewModels
             });
         }
 
+        /// <summary>
+        ///     The remote currently worked with: the remote of the current branch's upstream, then the default remote
+        ///     of this repository, then `origin`, then the first remote.
+        /// </summary>
+        public Models.Remote GetPreferredRemote()
+        {
+            if (_remotes.Count == 0)
+                return null;
+
+            var upstream = _currentBranch?.Upstream;
+            if (!string.IsNullOrEmpty(upstream))
+            {
+                var tracking = _branches.Find(x => !x.IsLocal && x.FullName.Equals(upstream, StringComparison.Ordinal));
+                if (tracking != null)
+                {
+                    var remote = _remotes.Find(x => x.Name.Equals(tracking.Remote, StringComparison.Ordinal));
+                    if (remote != null)
+                        return remote;
+                }
+
+                // The upstream may be gone, match `refs/remotes/<remote>/` instead (remote names can contain `/`).
+                Models.Remote matched = null;
+                foreach (var remote in _remotes)
+                {
+                    if (upstream.StartsWith($"refs/remotes/{remote.Name}/", StringComparison.Ordinal) &&
+                        (matched == null || remote.Name.Length > matched.Name.Length))
+                        matched = remote;
+                }
+
+                if (matched != null)
+                    return matched;
+            }
+
+            if (!string.IsNullOrEmpty(_settings.DefaultRemote))
+            {
+                var def = _remotes.Find(x => x.Name.Equals(_settings.DefaultRemote, StringComparison.Ordinal));
+                if (def != null)
+                    return def;
+            }
+
+            return _remotes.Find(x => x.Name.Equals("origin", StringComparison.Ordinal)) ?? _remotes[0];
+        }
+
         public async Task FetchAsync(bool autoStart)
         {
             if (!CanCreatePopup())

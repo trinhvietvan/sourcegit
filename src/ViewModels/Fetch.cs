@@ -51,19 +51,7 @@ namespace SourceGit.ViewModels
             _fetchAllRemotes = IsFetchAllRemoteVisible && _repo.UIStates.FetchAllRemotes;
             CanTerminate = true;
 
-            if (preferredRemote != null)
-            {
-                SelectedRemote = preferredRemote;
-            }
-            else if (!string.IsNullOrEmpty(_repo.Settings.DefaultRemote))
-            {
-                var def = _repo.Remotes.Find(r => r.Name == _repo.Settings.DefaultRemote);
-                SelectedRemote = def ?? _repo.Remotes[0];
-            }
-            else
-            {
-                SelectedRemote = _repo.Remotes[0];
-            }
+            SelectedRemote = preferredRemote ?? _repo.GetPreferredRemote();
         }
 
         public override async Task<bool> Sure()

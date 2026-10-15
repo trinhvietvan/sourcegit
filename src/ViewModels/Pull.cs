@@ -84,28 +84,7 @@ namespace SourceGit.ViewModels
             }
             else
             {
-                Models.Remote autoSelectedRemote = null;
-                if (!string.IsNullOrEmpty(Current.Upstream))
-                {
-                    var remoteNameEndIdx = Current.Upstream.IndexOf('/', 13);
-                    if (remoteNameEndIdx > 0)
-                    {
-                        var remoteName = Current.Upstream.Substring(13, remoteNameEndIdx - 13);
-                        autoSelectedRemote = _repo.Remotes.Find(x => x.Name == remoteName);
-                    }
-                }
-
-                if (autoSelectedRemote == null)
-                {
-                    Models.Remote remote = null;
-                    if (!string.IsNullOrEmpty(_repo.Settings.DefaultRemote))
-                        remote = _repo.Remotes.Find(x => x.Name == _repo.Settings.DefaultRemote);
-                    _selectedRemote = remote ?? _repo.Remotes[0];
-                }
-                else
-                {
-                    _selectedRemote = autoSelectedRemote;
-                }
+                _selectedRemote = _repo.GetPreferredRemote();
 
                 PostRemoteSelected();
                 HasSpecifiedRemoteBranch = false;
