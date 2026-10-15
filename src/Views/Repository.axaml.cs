@@ -508,19 +508,19 @@ namespace SourceGit.Views
                 var pullAll = new MenuItem();
                 pullAll.Header = App.Text("Repository.Submodules.PullAll");
                 pullAll.Icon = this.CreateMenuIcon("Icons.Pull");
-                pullAll.Click += (_, ev) =>
+                pullAll.Click += async (_, ev) =>
                 {
-                    repo.PullSubmodules();
                     ev.Handled = true;
+                    await repo.PullSubmodulesAsync();
                 };
 
                 var pushAll = new MenuItem();
                 pushAll.Header = App.Text("Repository.Submodules.PushAll");
                 pushAll.Icon = this.CreateMenuIcon("Icons.Push");
-                pushAll.Click += (_, ev) =>
+                pushAll.Click += async (_, ev) =>
                 {
-                    repo.PushSubmodules();
                     ev.Handled = true;
+                    await repo.PushSubmodulesAsync();
                 };
 
                 var update = new MenuItem();

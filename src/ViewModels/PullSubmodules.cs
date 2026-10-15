@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,7 +6,7 @@ namespace SourceGit.ViewModels
 {
     public class PullSubmodules : Popup
     {
-        public List<Models.Submodule> Submodules
+        public List<SubmoduleBranchTarget> Targets
         {
             get;
         }
@@ -19,10 +18,10 @@ namespace SourceGit.ViewModels
             set;
         } = false;
 
-        public PullSubmodules(Repository repo)
+        public PullSubmodules(Repository repo, List<SubmoduleBranchTarget> targets)
         {
             _repo = repo;
-            Submodules = repo.Submodules.FindAll(x => x.Status != Models.SubmoduleStatus.NotInited);
+            Targets = targets;
             CanTerminate = true;
         }
 
@@ -37,18 +36,22 @@ namespace SourceGit.ViewModels
             var token = _cancellation.Token;
             var useRebase = UseRebase;
 
-            foreach (var submodule in Submodules)
+            foreach (var target in Targets)
             {
                 if (token.IsCancellationRequested)
                     break;
 
-                var fullpath = Path.GetFullPath(Path.Combine(_repo.FullPath, submodule.Path));
+                var submodule = target.Module;
+                var fullpath = target.FullPath;
                 var changes = await new Commands.CountLocalChanges(fullpath, false).GetResultAsync();
                 if (changes > 0)
                 {
                     log.AppendLine($"Skipped '{submodule.Path}': has local changes\n");
                     continue;
                 }
+
+                if (!await SubmoduleBranchTarget.EnsureOnBranchAsync(submodule, fullpath, _repo.FullPath, log))
+                    continue;
 
                 var info = await SubmoduleTrackingInfo.QueryAsync(fullpath);
                 if (info.Local == null)

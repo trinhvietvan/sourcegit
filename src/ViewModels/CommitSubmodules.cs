@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,7 +7,7 @@ namespace SourceGit.ViewModels
 {
     public class CommitSubmodules : Popup
     {
-        public List<Models.Submodule> Submodules
+        public List<SubmoduleBranchTarget> Targets
         {
             get;
         }
@@ -36,10 +35,10 @@ namespace SourceGit.ViewModels
             get => App.Text("WorkingCopy.CommitAndPush");
         }
 
-        public CommitSubmodules(Repository repo, List<Models.Submodule> submodules)
+        public CommitSubmodules(Repository repo, List<SubmoduleBranchTarget> targets)
         {
             _repo = repo;
-            Submodules = submodules;
+            Targets = targets;
             CanTerminate = true;
         }
 
@@ -56,12 +55,13 @@ namespace SourceGit.ViewModels
             var includeUntracked = IncludeUntracked;
             var push = IsAlternativeSure;
 
-            foreach (var submodule in Submodules)
+            foreach (var listed in Targets)
             {
                 if (token.IsCancellationRequested)
                     break;
 
-                var fullpath = Path.GetFullPath(Path.Combine(_repo.FullPath, submodule.Path));
+                var submodule = listed.Module;
+                var fullpath = listed.FullPath;
                 var changes = await new Commands.CountLocalChanges(fullpath, includeUntracked).GetResultAsync();
                 if (changes == 0)
                 {
@@ -70,12 +70,8 @@ namespace SourceGit.ViewModels
                 }
 
                 // Commits made on a detached HEAD are easily lost, so only commit on a branch.
-                var branch = await new Commands.QueryCurrentBranch(fullpath).GetResultAsync();
-                if (string.IsNullOrEmpty(branch))
-                {
-                    log.AppendLine($"Skipped '{submodule.Path}': HEAD is detached\n");
+                if (!await SubmoduleBranchTarget.EnsureOnBranchAsync(submodule, fullpath, _repo.FullPath, log))
                     continue;
-                }
 
                 var add = new Commands.Add(fullpath, includeUntracked);
                 add.Context = _repo.FullPath;

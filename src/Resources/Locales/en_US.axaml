@@ -234,7 +234,7 @@
   <x:String x:Key="Text.CommitSubmodules.Message" xml:space="preserve">Commit Message</x:String>
   <x:String x:Key="Text.CommitSubmodules.Message.Placeholder" xml:space="preserve">Used for every submodule listed above</x:String>
   <x:String x:Key="Text.CommitSubmodules.NoChanges" xml:space="preserve">No submodule has local changes</x:String>
-  <x:String x:Key="Text.CommitSubmodules.Tip" xml:space="preserve">Stage all local changes of each submodule below and commit them on its current branch with the same message. Submodules with detached HEAD or without local changes will be skipped. COMMIT &amp; PUSH also pushes each committed branch to its upstream.</x:String>
+  <x:String x:Key="Text.CommitSubmodules.Tip" xml:space="preserve">Stage all local changes of each submodule below and commit them on its current branch with the same message. A submodule whose detached HEAD is exactly at the tip of a branch is switched to that branch first, other detached submodules are skipped. COMMIT &amp; PUSH also pushes each committed branch to its upstream.</x:String>
   <x:String x:Key="Text.Compare" xml:space="preserve">Compare</x:String>
   <x:String x:Key="Text.Compare.Changes" xml:space="preserve">CHANGES</x:String>
   <x:String x:Key="Text.Compare.Commits" xml:space="preserve">COMMITS</x:String>
@@ -814,7 +814,7 @@
   <x:String x:Key="Text.Pull.Title" xml:space="preserve">Pull (Fetch &amp; Merge)</x:String>
   <x:String x:Key="Text.Pull.UseRebase" xml:space="preserve">Use rebase instead of merge</x:String>
   <x:String x:Key="Text.PullSubmodules" xml:space="preserve">Pull All Submodules</x:String>
-  <x:String x:Key="Text.PullSubmodules.Tip" xml:space="preserve">Pull the current branch of each initialized submodule from its upstream. Submodules with detached HEAD, no upstream or local changes will be skipped.</x:String>
+  <x:String x:Key="Text.PullSubmodules.Tip" xml:space="preserve">Pull the current branch of each initialized submodule from its upstream. A submodule whose detached HEAD is exactly at the tip of a branch is switched to that branch first. Other detached submodules and those without upstream or with local changes will be skipped.</x:String>
   <x:String x:Key="Text.Push" xml:space="preserve">Push</x:String>
   <x:String x:Key="Text.Push.CheckSubmodules" xml:space="preserve">Make sure submodules have been pushed</x:String>
   <x:String x:Key="Text.Push.Force" xml:space="preserve">Force push</x:String>
@@ -829,7 +829,7 @@
   <x:String x:Key="Text.Push.Tracking" xml:space="preserve">Set as tracking branch</x:String>
   <x:String x:Key="Text.Push.WithAllTags" xml:space="preserve">Push all tags</x:String>
   <x:String x:Key="Text.PushSubmodules" xml:space="preserve">Push All Submodules</x:String>
-  <x:String x:Key="Text.PushSubmodules.Tip" xml:space="preserve">Push the current branch of each initialized submodule to its upstream. Submodules with detached HEAD, no upstream or nothing to push will be skipped.</x:String>
+  <x:String x:Key="Text.PushSubmodules.Tip" xml:space="preserve">Push the current branch of each initialized submodule to its upstream. A submodule whose detached HEAD is exactly at the tip of a branch is switched to that branch first. Other detached submodules and those without upstream or with nothing to push will be skipped.</x:String>
   <x:String x:Key="Text.PushTag" xml:space="preserve">Push Tag To Remote</x:String>
   <x:String x:Key="Text.PushTag.PushAllRemotes" xml:space="preserve">Push to all remotes</x:String>
   <x:String x:Key="Text.PushTag.Remote" xml:space="preserve">Remote:</x:String>
@@ -1060,6 +1060,8 @@
   <x:String x:Key="Text.Submodule.URL" xml:space="preserve">URL</x:String>
   <x:String x:Key="Text.SubmoduleRevisionCompare" xml:space="preserve">Submodule Change Details</x:String>
   <x:String x:Key="Text.SubmoduleRevisionCompare.OpenDetails" xml:space="preserve">OPEN DETAILS</x:String>
+  <x:String x:Key="Text.Submodules.Detached.Checkout" xml:space="preserve">detached → will checkout '{0}'</x:String>
+  <x:String x:Key="Text.Submodules.Detached.Skip" xml:space="preserve">detached → will be skipped</x:String>
   <x:String x:Key="Text.Sure" xml:space="preserve">OK</x:String>
   <x:String x:Key="Text.Tag.Tagger" xml:space="preserve">TAGGER</x:String>
   <x:String x:Key="Text.Tag.Time" xml:space="preserve">TIME</x:String>

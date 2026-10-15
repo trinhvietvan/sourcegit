@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:SourceGit.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="24"
+             x:Class="SourceGit.Views.SubmoduleBranchTargetPresenter"
+             x:DataType="vm:SubmoduleBranchTarget">
+  <StackPanel Orientation="Horizontal" Height="24" VerticalAlignment="Center">
+    <Path Margin="0,0,8,0" Width="14" Height="14" Fill="{DynamicResource Brush.FG1}" Data="{StaticResource Icons.Submodule}"/>
+    <TextBlock Text="{Binding Module.Path, Mode=OneWay}" VerticalAlignment="Center"/>
+
+    <StackPanel Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center" IsVisible="{Binding IsOnBranch}">
+      <Path Width="12" Height="12" Fill="{DynamicResource Brush.FG2}" Data="{StaticResource Icons.Branch}"/>
+      <TextBlock Margin="4,0,0,0" Text="{Binding StatusText}" Foreground="{DynamicResource Brush.FG2}"/>
+    </StackPanel>
+
+    <Border Margin="8,0,0,0" Padding="4,0" CornerRadius="4" VerticalAlignment="Center" Background="DarkOrange" IsVisible="{Binding WillCheckout}">
+      <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="White"/>
+    </Border>
+
+    <Border Margin="8,0,0,0" Padding="4,0" CornerRadius="4" VerticalAlignment="Center" Background="OrangeRed" IsVisible="{Binding WillSkip}" ToolTip.Tip="{Binding SkipReason}">
+      <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="White"/>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -1575,7 +1575,7 @@ namespace SourceGit.ViewModels
                 return;
 
             // `Submodule.Status` only reports local changes of submodules whose revision is unchanged, so count them here.
-            var changed = new List<Models.Submodule>();
+            var changed = new List<SubmoduleBranchTarget>();
             foreach (var submodule in _submodules)
             {
                 if (submodule.Status == Models.SubmoduleStatus.NotInited)
@@ -1583,7 +1583,7 @@ namespace SourceGit.ViewModels
 
                 var fullpath = Path.GetFullPath(Path.Combine(FullPath, submodule.Path));
                 if (await new Commands.CountLocalChanges(fullpath, true).GetResultAsync() > 0)
-                    changed.Add(submodule);
+                    changed.Add(await SubmoduleBranchTarget.QueryAsync(submodule, fullpath));
             }
 
             if (changed.Count == 0)
@@ -1596,16 +1596,39 @@ namespace SourceGit.ViewModels
                 ShowPopup(new CommitSubmodules(this, changed));
         }
 
-        public void PullSubmodules()
+        public async Task PullSubmodulesAsync()
         {
+            if (!CanCreatePopup())
+                return;
+
+            var targets = await QuerySubmoduleBranchTargetsAsync();
             if (CanCreatePopup())
-                ShowPopup(new PullSubmodules(this));
+                ShowPopup(new PullSubmodules(this, targets));
         }
 
-        public void PushSubmodules()
+        public async Task PushSubmodulesAsync()
         {
+            if (!CanCreatePopup())
+                return;
+
+            var targets = await QuerySubmoduleBranchTargetsAsync();
             if (CanCreatePopup())
-                ShowPopup(new PushSubmodules(this));
+                ShowPopup(new PushSubmodules(this, targets));
+        }
+
+        private async Task<List<SubmoduleBranchTarget>> QuerySubmoduleBranchTargetsAsync()
+        {
+            var targets = new List<SubmoduleBranchTarget>();
+            foreach (var submodule in _submodules)
+            {
+                if (submodule.Status == Models.SubmoduleStatus.NotInited)
+                    continue;
+
+                var fullpath = Path.GetFullPath(Path.Combine(FullPath, submodule.Path));
+                targets.Add(await SubmoduleBranchTarget.QueryAsync(submodule, fullpath));
+            }
+
+            return targets;
         }
 
         public async Task AutoUpdateSubmodulesAsync(Models.ICommandLog log)
