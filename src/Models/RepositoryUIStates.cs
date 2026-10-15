@@ -111,12 +111,6 @@ namespace SourceGit.Models
             set;
         } = false;
 
-        public bool PreferRebaseInsteadOfMerge
-        {
-            get;
-            set;
-        } = true;
-
         public bool CheckSubmodulesOnPush
         {
             get;

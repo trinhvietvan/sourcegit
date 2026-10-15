@@ -12,11 +12,12 @@ namespace SourceGit.ViewModels
             get;
         }
 
+        // Always starts unchecked (merge), it is not remembered.
         public bool UseRebase
         {
-            get => _repo.UIStates.PreferRebaseInsteadOfMerge;
-            set => _repo.UIStates.PreferRebaseInsteadOfMerge = value;
-        }
+            get;
+            set;
+        } = false;
 
         public PullSubmodules(Repository repo)
         {
