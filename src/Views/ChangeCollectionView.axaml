@@ -12,6 +12,8 @@
   <UserControl.Styles>
     <Style Selector="ListBox">
       <Setter Property="Background" Value="Transparent"/>
+      <!-- Keep the last row away from the bottom edge (and the overlay horizontal scrollbar) when scrolled to the end -->
+      <Setter Property="Padding" Value="0,0,0,8"/>
       <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
       <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
       <Setter Property="ItemsPanel">
