@@ -39,65 +39,65 @@ namespace SourceGit.ViewModels
 
         public bool EnableTopoOrder
         {
-            get => _repo.UIStates.EnableTopoOrderInHistory;
+            get => Preferences.Instance.EnableTopoOrderInHistory;
             set
             {
-                if (value != _repo.UIStates.EnableTopoOrderInHistory)
+                if (value != Preferences.Instance.EnableTopoOrderInHistory)
                 {
-                    _repo.UIStates.EnableTopoOrderInHistory = value;
-                    _repo.RefreshCommits();
+                    Preferences.Instance.EnableTopoOrderInHistory = value;
+                    ForEachOpened(h => h._repo.RefreshCommits());
                 }
             }
         }
 
         public bool IsAuthorColumnVisible
         {
-            get => _repo.UIStates.IsAuthorColumnVisibleInHistory;
+            get => Preferences.Instance.IsAuthorColumnVisibleInHistory;
             set
             {
-                if (_repo.UIStates.IsAuthorColumnVisibleInHistory != value)
+                if (Preferences.Instance.IsAuthorColumnVisibleInHistory != value)
                 {
-                    _repo.UIStates.IsAuthorColumnVisibleInHistory = value;
-                    OnPropertyChanged();
+                    Preferences.Instance.IsAuthorColumnVisibleInHistory = value;
+                    ForEachOpened(h => h.OnPropertyChanged(nameof(IsAuthorColumnVisible)));
                 }
             }
         }
 
         public bool IsSHAColumnVisible
         {
-            get => _repo.UIStates.IsSHAColumnVisibleInHistory;
+            get => Preferences.Instance.IsSHAColumnVisibleInHistory;
             set
             {
-                if (_repo.UIStates.IsSHAColumnVisibleInHistory != value)
+                if (Preferences.Instance.IsSHAColumnVisibleInHistory != value)
                 {
-                    _repo.UIStates.IsSHAColumnVisibleInHistory = value;
-                    OnPropertyChanged();
+                    Preferences.Instance.IsSHAColumnVisibleInHistory = value;
+                    ForEachOpened(h => h.OnPropertyChanged(nameof(IsSHAColumnVisible)));
                 }
             }
         }
 
         public bool IsAuthorTimeColumnVisible
         {
-            get => _repo.UIStates.IsAuthorTimeColumnVisibleInHistory;
+            get => Preferences.Instance.IsAuthorTimeColumnVisibleInHistory;
             set
             {
-                if (_repo.UIStates.IsAuthorTimeColumnVisibleInHistory != value)
+                if (Preferences.Instance.IsAuthorTimeColumnVisibleInHistory != value)
                 {
-                    _repo.UIStates.IsAuthorTimeColumnVisibleInHistory = value;
-                    OnPropertyChanged();
+                    Preferences.Instance.IsAuthorTimeColumnVisibleInHistory = value;
+                    ForEachOpened(h => h.OnPropertyChanged(nameof(IsAuthorTimeColumnVisible)));
                 }
             }
         }
 
         public bool IsCommitTimeColumnVisible
         {
-            get => _repo.UIStates.IsCommitTimeColumnVisibleInHistory;
+            get => Preferences.Instance.IsCommitTimeColumnVisibleInHistory;
             set
             {
-                if (_repo.UIStates.IsCommitTimeColumnVisibleInHistory != value)
+                if (Preferences.Instance.IsCommitTimeColumnVisibleInHistory != value)
                 {
-                    _repo.UIStates.IsCommitTimeColumnVisibleInHistory = value;
-                    OnPropertyChanged();
+                    Preferences.Instance.IsCommitTimeColumnVisibleInHistory = value;
+                    ForEachOpened(h => h.OnPropertyChanged(nameof(IsCommitTimeColumnVisible)));
                 }
             }
         }
@@ -121,13 +121,13 @@ namespace SourceGit.ViewModels
 
         public Models.CommitGraphHighlighting GraphHighlighting
         {
-            get => _repo.UIStates.GraphHighlighting;
+            get => Preferences.Instance.GraphHighlightingInHistory;
             set
             {
-                if (_repo.UIStates.GraphHighlighting != value)
+                if (Preferences.Instance.GraphHighlightingInHistory != value)
                 {
-                    _repo.UIStates.GraphHighlighting = value;
-                    GenerateGraph(_commits);
+                    Preferences.Instance.GraphHighlightingInHistory = value;
+                    ForEachOpened(h => h.GenerateGraph(h._commits));
                 }
             }
         }
@@ -237,16 +237,16 @@ namespace SourceGit.ViewModels
 
         public bool HasShowFlag(Models.HistoryShowFlags flag)
         {
-            return _repo.UIStates.HistoryShowFlags.HasFlag(flag);
+            return Preferences.Instance.HistoryShowFlags.HasFlag(flag);
         }
 
         public void ToggleShowFlag(Models.HistoryShowFlags flag)
         {
             if (HasShowFlag(flag))
-                _repo.UIStates.HistoryShowFlags -= flag;
+                Preferences.Instance.HistoryShowFlags -= flag;
             else
-                _repo.UIStates.HistoryShowFlags |= flag;
-            _repo.RefreshCommits();
+                Preferences.Instance.HistoryShowFlags |= flag;
+            ForEachOpened(h => h._repo.RefreshCommits());
         }
 
         public Models.BisectState UpdateBisectInfo()
@@ -558,14 +558,28 @@ namespace SourceGit.ViewModels
                 DetailContext = new Models.Count(_selectedCommits.Count);
             }
 
-            if (_repo.UIStates.GraphHighlighting >= Models.CommitGraphHighlighting.SelectedCommitsOnly)
+            if (Preferences.Instance.GraphHighlightingInHistory >= Models.CommitGraphHighlighting.SelectedCommitsOnly)
                 GenerateGraph(_commits);
+        }
+
+        // Options of `Advanced Options` are shared by all repositories, so apply the change to every opened one.
+        private static void ForEachOpened(Action<Histories> action)
+        {
+            var launcher = App.GetLauncher();
+            if (launcher == null)
+                return;
+
+            foreach (var page in launcher.Pages)
+            {
+                if (page.Data is Repository { Histories: { } histories })
+                    action(histories);
+            }
         }
 
         private void GenerateGraph(List<Models.Commit> commits)
         {
-            var firstParentOnly = _repo.UIStates.HistoryShowFlags.HasFlag(Models.HistoryShowFlags.FirstParentOnly);
-            var highlighting = _repo.UIStates.GraphHighlighting;
+            var firstParentOnly = Preferences.Instance.HistoryShowFlags.HasFlag(Models.HistoryShowFlags.FirstParentOnly);
+            var highlighting = Preferences.Instance.GraphHighlightingInHistory;
             var extraHeads = new HashSet<string>();
 
             if (highlighting >= Models.CommitGraphHighlighting.SelectedCommitsOnly)

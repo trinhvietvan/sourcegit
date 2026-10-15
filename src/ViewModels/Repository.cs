@@ -1272,13 +1272,14 @@ namespace SourceGit.ViewModels
                 await Dispatcher.UIThread.InvokeAsync(() => _histories.IsLoading = true);
 
                 var currentUpstream = string.Empty;
-                if (_uiStates.HistoryShowFlags.HasFlag(Models.HistoryShowFlags.CurrentBranchOnly))
+                var showFlags = Preferences.Instance.HistoryShowFlags;
+                if (showFlags.HasFlag(Models.HistoryShowFlags.CurrentBranchOnly))
                     currentUpstream = await new Commands.QueryUpstreamOfHead(FullPath).GetResultAsync().ConfigureAwait(false);
 
                 var builder = new StringBuilder();
                 builder
                     .Append('-').Append(Preferences.Instance.MaxHistoryCommits).Append(' ')
-                    .Append(_uiStates.BuildHistoryParams(GitDir, currentUpstream));
+                    .Append(_uiStates.BuildHistoryParams(GitDir, currentUpstream, showFlags, Preferences.Instance.EnableTopoOrderInHistory));
 
                 var commits = await new Commands.QueryCommits(FullPath, builder.ToString())
                     .GetResultAsync()

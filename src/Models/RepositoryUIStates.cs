@@ -9,53 +9,11 @@ namespace SourceGit.Models
 {
     public class RepositoryUIStates
     {
-        public HistoryShowFlags HistoryShowFlags
-        {
-            get;
-            set;
-        } = HistoryShowFlags.None;
-
-        public bool IsAuthorColumnVisibleInHistory
-        {
-            get;
-            set;
-        } = true;
-
-        public bool IsSHAColumnVisibleInHistory
-        {
-            get;
-            set;
-        } = true;
-
-        public bool IsAuthorTimeColumnVisibleInHistory
-        {
-            get;
-            set;
-        } = false;
-
-        public bool IsCommitTimeColumnVisibleInHistory
-        {
-            get;
-            set;
-        } = true;
-
         public double AuthorColumnWidth
         {
             get;
             set;
         } = 120;
-
-        public bool EnableTopoOrderInHistory
-        {
-            get;
-            set;
-        } = false;
-
-        public CommitGraphHighlighting GraphHighlighting
-        {
-            get;
-            set;
-        } = CommitGraphHighlighting.All;
 
         public BranchSortMode LocalBranchSortMode
         {
@@ -394,26 +352,26 @@ namespace SourceGit.Models
                 HistoryFilters.Remove(filter);
         }
 
-        public string BuildHistoryParams(string gitDir, string currentUpstream)
+        public string BuildHistoryParams(string gitDir, string currentUpstream, HistoryShowFlags showFlags, bool enableTopoOrder)
         {
             var builder = new StringBuilder();
 
-            if (EnableTopoOrderInHistory)
+            if (enableTopoOrder)
                 builder.Append("--topo-order ");
             else
                 builder.Append("--date-order ");
 
-            if (HistoryShowFlags.HasFlag(HistoryShowFlags.Reflog))
+            if (showFlags.HasFlag(HistoryShowFlags.Reflog))
                 builder.Append("--reflog ");
 
-            if (HistoryShowFlags.HasFlag(HistoryShowFlags.FirstParentOnly))
+            if (showFlags.HasFlag(HistoryShowFlags.FirstParentOnly))
                 builder.Append("--first-parent ");
 
-            if (HistoryShowFlags.HasFlag(HistoryShowFlags.SimplifyByDecoration))
+            if (showFlags.HasFlag(HistoryShowFlags.SimplifyByDecoration))
                 builder.Append("--simplify-by-decoration ");
 
             // Only show commits reachable from HEAD (and its upstream). Branch/tag filters are ignored in this mode.
-            if (HistoryShowFlags.HasFlag(HistoryShowFlags.CurrentBranchOnly))
+            if (showFlags.HasFlag(HistoryShowFlags.CurrentBranchOnly))
             {
                 builder.Append("HEAD");
                 if (!string.IsNullOrEmpty(currentUpstream))

@@ -218,6 +218,48 @@ namespace SourceGit.ViewModels
             set => SetProperty(ref _useTwoColumnsLayoutInHistories, value);
         }
 
+        public Models.HistoryShowFlags HistoryShowFlags
+        {
+            get => _historyShowFlags;
+            set => SetProperty(ref _historyShowFlags, value);
+        }
+
+        public bool EnableTopoOrderInHistory
+        {
+            get => _enableTopoOrderInHistory;
+            set => SetProperty(ref _enableTopoOrderInHistory, value);
+        }
+
+        public Models.CommitGraphHighlighting GraphHighlightingInHistory
+        {
+            get => _graphHighlightingInHistory;
+            set => SetProperty(ref _graphHighlightingInHistory, value);
+        }
+
+        public bool IsAuthorColumnVisibleInHistory
+        {
+            get => _isAuthorColumnVisibleInHistory;
+            set => SetProperty(ref _isAuthorColumnVisibleInHistory, value);
+        }
+
+        public bool IsSHAColumnVisibleInHistory
+        {
+            get => _isSHAColumnVisibleInHistory;
+            set => SetProperty(ref _isSHAColumnVisibleInHistory, value);
+        }
+
+        public bool IsAuthorTimeColumnVisibleInHistory
+        {
+            get => _isAuthorTimeColumnVisibleInHistory;
+            set => SetProperty(ref _isAuthorTimeColumnVisibleInHistory, value);
+        }
+
+        public bool IsCommitTimeColumnVisibleInHistory
+        {
+            get => _isCommitTimeColumnVisibleInHistory;
+            set => SetProperty(ref _isCommitTimeColumnVisibleInHistory, value);
+        }
+
         public bool DisplayTimeAsPeriodInHistories
         {
             get => _displayTimeAsPeriodInHistories;
@@ -877,6 +919,13 @@ namespace SourceGit.ViewModels
         private string _ignoreUpdateTag = string.Empty;
 
         private bool _showTagsInGraph = true;
+        private Models.HistoryShowFlags _historyShowFlags = Models.HistoryShowFlags.None;
+        private bool _enableTopoOrderInHistory = false;
+        private Models.CommitGraphHighlighting _graphHighlightingInHistory = Models.CommitGraphHighlighting.All;
+        private bool _isAuthorColumnVisibleInHistory = true;
+        private bool _isSHAColumnVisibleInHistory = true;
+        private bool _isAuthorTimeColumnVisibleInHistory = false;
+        private bool _isCommitTimeColumnVisibleInHistory = true;
         private bool _useTwoColumnsLayoutInHistories = false;
         private bool _displayTimeAsPeriodInHistories = false;
         private bool _useSideBySideDiff = false;
