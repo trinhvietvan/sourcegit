@@ -62,12 +62,15 @@ Code: `Models/HostingAccount.cs`, `Models/HostingAPI.cs`, `Commands/Credential.c
 - [ ] Unbinding an account does not revert `user.name` / `user.email` that were applied from it.
 - [ ] Unbinding an account of an SSH remote keeps its `remote.<name>.sshkey`.
 
-## Pull/Push all submodules
+## Commit/Pull/Push all submodules
 
-Code: `ViewModels/PullSubmodules.cs`, `ViewModels/PushSubmodules.cs`, `ViewModels/SubmoduleTrackingInfo.cs`.
+Code: `ViewModels/CommitSubmodules.cs`, `ViewModels/PullSubmodules.cs`, `ViewModels/PushSubmodules.cs`,
+`ViewModels/SubmoduleTrackingInfo.cs`.
 
-- [ ] Only direct submodules (`git submodule status` without `--recursive`); nested submodules are neither pulled nor
-  pushed.
+- [ ] Only direct submodules (`git submodule status` without `--recursive`); nested submodules are neither committed,
+  pulled nor pushed.
+- [ ] Commit all: one message for every submodule, no sign-off/no-verify/amend options, and the new submodule commits
+  are not staged in the parent repository.
 - [ ] Pulling does not commit the new submodule commits in the parent repository (it only shows them as changed), and
   pushing submodules does not push the parent. Consider an option "commit submodule pointers" / "push parent too".
 - [ ] Runs sequentially, no per-submodule result summary: failures only show up as notifications and in the command
@@ -75,7 +78,6 @@ Code: `ViewModels/PullSubmodules.cs`, `ViewModels/PushSubmodules.cs`, `ViewModel
 - [ ] Pull skips any submodule with local changes; there is no "stash and reapply" option like the normal Pull.
 - [ ] Push skips when `Ahead` is 0, computed from the last fetched upstream ref (a stale remote-tracking ref may
   hide/skip work); `Force push` does not bypass this check.
-- [ ] Pull mode (merge/rebase) is shared with the parent repo's `PreferRebaseInsteadOfMerge` UI state.
 
 ## Add git to user PATH (Windows)
 

@@ -1568,6 +1568,33 @@ namespace SourceGit.ViewModels
                 ShowPopup(new UpdateSubmodules(this, null));
         }
 
+        public async Task CommitSubmodulesAsync()
+        {
+            if (!CanCreatePopup())
+                return;
+
+            // `Submodule.Status` only reports local changes of submodules whose revision is unchanged, so count them here.
+            var changed = new List<Models.Submodule>();
+            foreach (var submodule in _submodules)
+            {
+                if (submodule.Status == Models.SubmoduleStatus.NotInited)
+                    continue;
+
+                var fullpath = Path.GetFullPath(Path.Combine(FullPath, submodule.Path));
+                if (await new Commands.CountLocalChanges(fullpath, true).GetResultAsync() > 0)
+                    changed.Add(submodule);
+            }
+
+            if (changed.Count == 0)
+            {
+                SendNotification(App.Text("CommitSubmodules.NoChanges"));
+                return;
+            }
+
+            if (CanCreatePopup())
+                ShowPopup(new CommitSubmodules(this, changed));
+        }
+
         public void PullSubmodules()
         {
             if (CanCreatePopup())

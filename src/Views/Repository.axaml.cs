@@ -496,6 +496,15 @@ namespace SourceGit.Views
         {
             if (sender is Button button && DataContext is ViewModels.Repository repo)
             {
+                var commitAll = new MenuItem();
+                commitAll.Header = App.Text("Repository.Submodules.CommitAll");
+                commitAll.Icon = this.CreateMenuIcon("Icons.Commit");
+                commitAll.Click += async (_, ev) =>
+                {
+                    ev.Handled = true;
+                    await repo.CommitSubmodulesAsync();
+                };
+
                 var pullAll = new MenuItem();
                 pullAll.Header = App.Text("Repository.Submodules.PullAll");
                 pullAll.Icon = this.CreateMenuIcon("Icons.Pull");
@@ -535,6 +544,7 @@ namespace SourceGit.Views
 
                 var menu = new ContextMenu();
                 menu.Placement = PlacementMode.BottomEdgeAlignedLeft;
+                menu.Items.Add(commitAll);
                 menu.Items.Add(pullAll);
                 menu.Items.Add(pushAll);
                 menu.Items.Add(update);

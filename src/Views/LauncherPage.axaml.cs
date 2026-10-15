@@ -38,7 +38,12 @@ namespace SourceGit.Views
             }
 
             if (DataContext is ViewModels.LauncherPage page)
+            {
+                if (page.Popup != null)
+                    page.Popup.IsAlternativeSure = false;
+
                 await page.ProcessPopupAsync();
+            }
 
             e.Handled = true;
         }
@@ -46,7 +51,25 @@ namespace SourceGit.Views
         private async void OnPopupSure(object _, RoutedEventArgs e)
         {
             if (DataContext is ViewModels.LauncherPage page)
+            {
+                if (page.Popup != null)
+                    page.Popup.IsAlternativeSure = false;
+
                 await page.ProcessPopupAsync();
+            }
+
+            e.Handled = true;
+        }
+
+        private async void OnPopupAlternativeSure(object _, RoutedEventArgs e)
+        {
+            if (DataContext is ViewModels.LauncherPage page)
+            {
+                if (page.Popup != null)
+                    page.Popup.IsAlternativeSure = true;
+
+                await page.ProcessPopupAsync();
+            }
 
             e.Handled = true;
         }

@@ -29,6 +29,29 @@ namespace SourceGit.ViewModels
             set => SetProperty(ref _progressDescription, value);
         }
 
+        /// <summary>
+        ///     Text of the primary button (`OK` by default).
+        /// </summary>
+        public virtual string SureButtonText
+        {
+            get => App.Text("Sure");
+        }
+
+        /// <summary>
+        ///     When not empty, a second confirm button is shown after the primary one. `IsAlternativeSure` tells `Sure()`
+        ///     which one was clicked.
+        /// </summary>
+        public virtual string AlternativeSureButtonText
+        {
+            get => null;
+        }
+
+        public bool IsAlternativeSure
+        {
+            get;
+            set;
+        } = false;
+
         [UnconditionalSuppressMessage("AssemblyLoadTrimming", "IL2026:RequiresUnreferencedCode")]
         public bool Check()
         {

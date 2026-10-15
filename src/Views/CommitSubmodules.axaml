@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:m="using:SourceGit.Models"
+             xmlns:vm="using:SourceGit.ViewModels"
+             xmlns:v="using:SourceGit.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SourceGit.Views.CommitSubmodules"
+             x:DataType="vm:CommitSubmodules">
+  <StackPanel Orientation="Vertical" Margin="8,0">
+    <StackPanel Orientation="Horizontal">
+      <Path Width="16" Height="16"
+            Data="{StaticResource Icons.Commit}"/>
+
+      <TextBlock FontSize="18"
+                 Margin="8,0,0,0"
+                 Classes="bold"
+                 Text="{DynamicResource Text.CommitSubmodules}"/>
+    </StackPanel>
+
+    <TextBlock Margin="0,16,0,0"
+               Text="{DynamicResource Text.CommitSubmodules.Tip}"
+               Foreground="{DynamicResource Brush.FG2}"
+               TextWrapping="Wrap"/>
+
+    <Border Margin="0,8,0,0"
+            MaxHeight="160"
+            BorderThickness="1"
+            BorderBrush="{DynamicResource Brush.Border2}"
+            Background="{DynamicResource Brush.Contents}">
+      <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Submodules}" Margin="8,4">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="m:Submodule">
+              <StackPanel Orientation="Horizontal" Height="24" VerticalAlignment="Center">
+                <Path Margin="0,0,8,0" Width="14" Height="14" Fill="{DynamicResource Brush.FG1}" Data="{StaticResource Icons.Submodule}"/>
+                <TextBlock Text="{Binding Path, Mode=OneWay}" VerticalAlignment="Center"/>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Border>
+
+    <TextBlock Margin="0,12,0,0" Text="{DynamicResource Text.CommitSubmodules.Message}"/>
+    <TextBox Margin="0,4,0,0"
+             Height="80"
+             CornerRadius="3"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             VerticalContentAlignment="Top"
+             Watermark="{DynamicResource Text.CommitSubmodules.Message.Placeholder}"
+             Text="{Binding Message, Mode=TwoWay}"
+             Tag="{Binding Source={x:Static v:StealHotKey.Enter}}"/>
+
+    <CheckBox Margin="0,8,0,0"
+              Height="32"
+              Content="{DynamicResource Text.Discard.IncludeUntracked}"
+              IsChecked="{Binding IncludeUntracked, Mode=TwoWay}"/>
+  </StackPanel>
+</UserControl>
