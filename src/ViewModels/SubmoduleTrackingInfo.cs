@@ -44,6 +44,9 @@ namespace SourceGit.ViewModels
                 return info;
             }
 
+            // Same as the remotes of the parent repository (see `Repository.RefreshBranches`).
+            remote.AccountSSHKey = Preferences.Instance.FindAccountSSHKey(remote.URL);
+
             info.Local = local;
             info.Upstream = upstream;
             info.Remote = remote;
