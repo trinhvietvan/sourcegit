@@ -50,3 +50,14 @@ The same binary is re-invoked by git as helper programs, selected by args/env be
 - **AOT/trim safety**: JSON serialization uses the source-generated context in `App.JsonCodeGen.cs`. Any new type persisted to/loaded from JSON must be added there as `[JsonSerializable(typeof(...))]`. Avoid reflection-heavy APIs. Avalonia compiled bindings are on by default (`x:DataType` required in axaml).
 - **Localization**: UI strings are `x:String` resources keyed `Text.*` in `src/Resources/Locales/en_US.axaml` (the reference locale). Use `{DynamicResource Text.Foo}` in axaml and `App.Text("Foo", args...)` in C# (the `Text.` prefix is added automatically). Add new keys to `en_US.axaml`; other locales may lag and are tracked in `TRANSLATION.md`.
 - Code style is enforced by `.editorconfig` + `dotnet format` in CI: Allman braces, 4-space indent, private fields `_camelCase` declared at the bottom of the class.
+
+## Fork-specific features
+
+Branch `feature/vantv_dev` (compare with `git log master..feature/vantv_dev`):
+
+- **Pull/Push all submodules**: `More Actions` dropdown in the SUBMODULES sidebar header (`Views/Repository.axaml.cs` `OnOpenSubmoduleGroupMenu`) opens `ViewModels.PullSubmodules` / `ViewModels.PushSubmodules`. Each initialized submodule is pulled/pushed sequentially on its current branch against its upstream (`ViewModels.SubmoduleTrackingInfo` resolves local branch/upstream/remote). Skipped (and logged) when HEAD is detached, there is no upstream, local changes exist (pull) or nothing is ahead (push, unless `Push all tags`). Pull reuses the repo's `PreferRebaseInsteadOfMerge`. Failures of one submodule do not stop the others.
+- **Commit graph `Current branch only` show flag**: really hides other branches by querying `HEAD <upstream>` instead of `--branches --remotes --tags HEAD`; branch/tag visibility filters are ignored while it is on.
+- **Sidebar group headers**: TAGS (`Show as tree`, `Sort`) and SUBMODULES actions are moved into a `More Actions` dropdown so every header shows at most two buttons.
+- **Embedded Git** (Windows): `ViewModels/EmbeddedGit.cs`, `Preferences > Git`.
+- **Hosting accounts**: `Preferences > Accounts`. Tokens are never stored by SourceGit; they go through the git credential helper via `Commands.Credential` (`git credential approve|reject|fill`, non-interactive). Accounts (metadata + optional SSH key) live in `Preferences.HostingAccounts`. `ViewModels.AccountSelector` binds an account to a remote (`credential.https://<host>.username` for HTTPS, `remote.<name>.sshkey` for SSH).
+- Open items / things to finish later are tracked in `KNOWN_ISSUES.md`.
