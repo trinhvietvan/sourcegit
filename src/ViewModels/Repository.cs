@@ -720,6 +720,11 @@ namespace SourceGit.ViewModels
                 ShowPopup(new Apply(this));
         }
 
+        public void DiscardAllChanges()
+        {
+            _workingCopy?.DiscardAllChanges();
+        }
+
         public async Task ExecCustomActionAsync(Models.CustomAction action, object scopeTarget)
         {
             if (!CanCreatePopup())

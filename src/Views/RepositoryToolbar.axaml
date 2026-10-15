@@ -84,6 +84,10 @@
         <Path Width="14" Height="14" Data="{StaticResource Icons.ApplyPatch}"/>
       </Button>
 
+      <Button Classes="icon_button" Width="32" Margin="12,0,0,0" Command="{Binding DiscardAllChanges}" IsVisible="{Binding !IsBare}" ToolTip.Tip="{DynamicResource Text.Repository.DiscardAll}">
+        <Path Width="14" Height="14" Data="{StaticResource Icons.Undo}"/>
+      </Button>
+
       <Rectangle Width="1" Height="16"
                  Margin="16,0,0,0"
                  VerticalAlignment="Center"
