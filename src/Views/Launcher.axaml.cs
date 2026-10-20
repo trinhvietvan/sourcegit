@@ -52,17 +52,39 @@ namespace SourceGit.Views
             var y = layout.LauncherPositionY;
             if (x != int.MinValue && y != int.MinValue && Screens is { } screens)
             {
-                var position = new PixelPoint(x, y);
-                var size = new PixelSize((int)layout.LauncherWidth, (int)layout.LauncherHeight);
-                var desiredRect = new PixelRect(position, size);
+                // Restore on the screen that shows the largest part of the last window, and move/shrink the window into
+                // its working area (the saved bounds often overlap the taskbar or the screen edge, e.g. after snapping).
+                Avalonia.Platform.Screen target = null;
+                var targetArea = 0L;
                 for (var i = 0; i < screens.ScreenCount; i++)
                 {
                     var screen = screens.All[i];
-                    if (screen.WorkingArea.Contains(desiredRect))
+                    var size = PixelSize.FromSize(new Size(layout.LauncherWidth, layout.LauncherHeight), screen.Scaling);
+                    var visible = screen.WorkingArea.Intersect(new PixelRect(new PixelPoint(x, y), size));
+                    var area = (long)visible.Width * visible.Height;
+                    if (area > targetArea)
                     {
-                        Position = position;
-                        return;
+                        target = screen;
+                        targetArea = area;
                     }
+                }
+
+                if (target != null)
+                {
+                    var workingArea = target.WorkingArea;
+                    var size = PixelSize.FromSize(new Size(layout.LauncherWidth, layout.LauncherHeight), target.Scaling);
+                    var width = Math.Min(size.Width, workingArea.Width);
+                    var height = Math.Min(size.Height, workingArea.Height);
+                    if (width != size.Width || height != size.Height)
+                    {
+                        Width = width / target.Scaling;
+                        Height = height / target.Scaling;
+                    }
+
+                    Position = new PixelPoint(
+                        Math.Clamp(x, workingArea.X, workingArea.Right - width),
+                        Math.Clamp(y, workingArea.Y, workingArea.Bottom - height));
+                    return;
                 }
             }
 
