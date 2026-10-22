@@ -17,8 +17,10 @@ Code: `Models/HostingAccount.cs`, `Models/HostingAPI.cs`, `Commands/Credential.c
     Self-hosted GitLab also needs a GCM OAuth app to be configured.
   - Bitbucket: OAuth tokens need `Authorization: Bearer` (not `email:token` like API tokens) and git uses the
     username `x-token-auth`. Not tested.
-- [ ] If GCM already stores a `github.com` credential, `fill` returns it without showing the sign-in UI, so a second
-  GitHub account can only be added with a personal access token.
+- [ ] With GCM, `Use Browser` runs `git credential-manager github login --browser` (`Commands.GitHubCredentialManager`)
+  because `fill` just returns the stored token when one `github.com` account exists. The signed-in account is found by
+  comparing the stored tokens before/after the login (`github list` + non-interactive `fill` per account). Not tested
+  with a real second account yet. Other credential helpers still use `fill` (second account needs a token).
 
 ### Bitbucket (not tested with a real account)
 

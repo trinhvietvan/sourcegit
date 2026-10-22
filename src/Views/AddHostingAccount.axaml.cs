@@ -1,3 +1,5 @@
+using System;
+
 using Avalonia.Interactivity;
 
 namespace SourceGit.Views
@@ -22,6 +24,12 @@ namespace SourceGit.Views
             e.Handled = true;
             if (DataContext is ViewModels.AddHostingAccount vm && await vm.SignInWithBrowserAsync())
                 Close();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            (DataContext as ViewModels.AddHostingAccount)?.CancelSignIn();
+            base.OnClosed(e);
         }
 
         private void OnCancel(object _, RoutedEventArgs e)

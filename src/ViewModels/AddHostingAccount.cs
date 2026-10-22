@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -73,7 +74,19 @@ namespace SourceGit.ViewModels
         public bool IsBusy
         {
             get => _isBusy;
-            private set => SetProperty(ref _isBusy, value);
+            private set
+            {
+                if (SetProperty(ref _isBusy, value))
+                    OnPropertyChanged(nameof(CanCancel));
+            }
+        }
+
+        /// <summary>
+        ///     The browser sign-in waits until the user finishes it in the browser, so it can be cancelled.
+        /// </summary>
+        public bool CanCancel
+        {
+            get => !_isBusy || _signInCancellation != null;
         }
 
         public string Error
@@ -116,26 +129,34 @@ namespace SourceGit.ViewModels
             Error = string.Empty;
 
             var host = NormalizeHost(_host);
+            _signInCancellation = new CancellationTokenSource();
             IsBusy = true;
 
-            (string Username, string Password)? credential;
+            string token;
             try
             {
-                credential = await new Commands.Credential(host, null).FillInteractiveAsync();
+                token = await SignInWithBrowserAsync(host, _signInCancellation.Token);
             }
             finally
             {
+                _signInCancellation.Dispose();
+                _signInCancellation = null;
                 IsBusy = false;
             }
 
-            if (credential == null)
+            if (string.IsNullOrEmpty(token))
             {
                 Error = App.Text("AddHostingAccount.Error.SignIn");
                 return false;
             }
 
-            Token = credential.Value.Password;
+            Token = token;
             return await SaveAsync();
+        }
+
+        public void CancelSignIn()
+        {
+            _signInCancellation?.Cancel();
         }
 
         public async Task<bool> SaveAsync()
@@ -237,6 +258,42 @@ namespace SourceGit.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Returns the token of the account signed in with the browser. `git credential fill` simply returns the stored
+        ///     token when Git Credential Manager already has one account of the host, so GCM's `github login` is used to
+        ///     always sign in again. The new account is the one whose stored token changed.
+        /// </summary>
+        private static async Task<string> SignInWithBrowserAsync(string host, CancellationToken cancellation)
+        {
+            var gcm = new Commands.GitHubCredentialManager(host);
+            var before = Native.OS.CredentialHelper.Equals("manager", StringComparison.Ordinal) ? await gcm.ListAsync() : null;
+            if (before == null)
+            {
+                var credential = await new Commands.Credential(host, null).FillInteractiveAsync();
+                return credential?.Password;
+            }
+
+            var oldTokens = new Dictionary<string, string>();
+            foreach (var account in before)
+                oldTokens[account] = await new Commands.Credential(host, account).FillAsync();
+
+            if (!await gcm.LoginWithBrowserAsync(cancellation))
+                return null;
+
+            var after = await gcm.ListAsync() ?? [];
+            foreach (var account in after)
+            {
+                var token = await new Commands.Credential(host, account).FillAsync();
+                if (string.IsNullOrEmpty(token))
+                    continue;
+
+                if (!oldTokens.TryGetValue(account, out var old) || !token.Equals(old, StringComparison.Ordinal))
+                    return token;
+            }
+
+            return null;
+        }
+
         private static string NormalizeHost(string host)
         {
             host = host?.Trim() ?? string.Empty;
@@ -255,5 +312,6 @@ namespace SourceGit.ViewModels
         private string _token = string.Empty;
         private bool _isBusy = false;
         private string _error = string.Empty;
+        private CancellationTokenSource _signInCancellation = null;
     }
 }
