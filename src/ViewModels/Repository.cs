@@ -1310,7 +1310,7 @@ namespace SourceGit.ViewModels
 
                 var currentUpstream = string.Empty;
                 var showFlags = Preferences.Instance.HistoryShowFlags;
-                if (_uiStates.FocusOnCurrentBranch || showFlags.HasFlag(Models.HistoryShowFlags.CurrentBranchOnly))
+                if (_uiStates.FocusOnCurrentBranch)
                     currentUpstream = await new Commands.QueryUpstreamOfCurrentBranch(FullPath).GetResultAsync().ConfigureAwait(false);
 
                 var builder = new StringBuilder();

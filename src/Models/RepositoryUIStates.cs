@@ -388,10 +388,8 @@ namespace SourceGit.Models
             if (showFlags.HasFlag(HistoryShowFlags.SimplifyByDecoration))
                 builder.Append("--simplify-by-decoration ");
 
-            // Only show commits reachable from HEAD (and its upstream). Branch/tag filters are ignored in this mode.
-            // Used by both the global `Current branch only` show flag (fork) and the per-repository
-            // `Focus on Current Branch` toolbar toggle (upstream).
-            if (FocusOnCurrentBranch || showFlags.HasFlag(HistoryShowFlags.CurrentBranchOnly))
+            // `Focus on Current Branch` mode: only show commits reachable from HEAD (and its upstream).
+            if (FocusOnCurrentBranch)
             {
                 builder.Append("HEAD");
                 if (!string.IsNullOrEmpty(currentUpstream))
