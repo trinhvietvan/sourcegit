@@ -177,6 +177,12 @@ namespace SourceGit.Models
             set;
         } = string.Empty;
 
+        public bool FocusOnCurrentBranch
+        {
+            get;
+            set;
+        } = false;
+
         public AvaloniaList<HistoryFilter> HistoryFilters
         {
             get;
@@ -372,7 +378,8 @@ namespace SourceGit.Models
             else
                 builder.Append("--date-order ");
 
-            if (showFlags.HasFlag(HistoryShowFlags.Reflog))
+            // `--reflog` is disabled in `FocusOnCurrentBranch` mode (upstream behavior).
+            if (showFlags.HasFlag(HistoryShowFlags.Reflog) && !FocusOnCurrentBranch)
                 builder.Append("--reflog ");
 
             if (showFlags.HasFlag(HistoryShowFlags.FirstParentOnly))
@@ -382,7 +389,9 @@ namespace SourceGit.Models
                 builder.Append("--simplify-by-decoration ");
 
             // Only show commits reachable from HEAD (and its upstream). Branch/tag filters are ignored in this mode.
-            if (showFlags.HasFlag(HistoryShowFlags.CurrentBranchOnly))
+            // Used by both the global `Current branch only` show flag (fork) and the per-repository
+            // `Focus on Current Branch` toolbar toggle (upstream).
+            if (FocusOnCurrentBranch || showFlags.HasFlag(HistoryShowFlags.CurrentBranchOnly))
             {
                 builder.Append("HEAD");
                 if (!string.IsNullOrEmpty(currentUpstream))

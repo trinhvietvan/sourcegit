@@ -45,6 +45,24 @@ namespace SourceGit.ViewModels
             set;
         } = new();
 
+        public bool FocusOnCurrentBranch
+        {
+            get => _uiStates.FocusOnCurrentBranch;
+            set
+            {
+                if (value != _uiStates.FocusOnCurrentBranch)
+                {
+                    _uiStates.FocusOnCurrentBranch = value;
+                    OnPropertyChanged();
+
+                    if (value && _historyFilterMode != Models.FilterMode.None)
+                        ClearHistoryFilters();
+                    else
+                        RefreshCommits();
+                }
+            }
+        }
+
         public Models.FilterMode HistoryFilterMode
         {
             get => _historyFilterMode;
@@ -463,7 +481,10 @@ namespace SourceGit.ViewModels
         {
             var commitMessage = _workingCopy.CommitMessage;
             if (!string.IsNullOrEmpty(commitMessage) && _workingCopy.InProgressContext != null)
+            {
                 File.WriteAllText(Path.Combine(GitDir, "MERGE_MSG"), commitMessage);
+                commitMessage = string.Empty; // Clears this from ui-state, since it is already saved in MERGE_MSG file.
+            }
 
             _uiStates.LastCommitMessage = commitMessage;
             _uiStates.Save();
@@ -1038,6 +1059,13 @@ namespace SourceGit.ViewModels
 
         public void SetTagFilterMode(Models.Tag tag, Models.FilterMode mode)
         {
+            // Auto turn off `FocusOnCurrentBranch` when user set a tag filter manually.
+            if (_uiStates.FocusOnCurrentBranch)
+            {
+                _uiStates.FocusOnCurrentBranch = false;
+                OnPropertyChanged(nameof(FocusOnCurrentBranch));
+            }
+
             var changed = _uiStates.UpdateHistoryFilters(tag.Name, Models.FilterType.Tag, mode);
             if (changed)
                 RefreshHistoryFilters(true);
@@ -1052,6 +1080,13 @@ namespace SourceGit.ViewModels
 
         public void SetBranchFilterMode(BranchTreeNode node, Models.FilterMode mode, bool clearExists, bool refresh)
         {
+            // Auto turn off `FocusOnCurrentBranch` when user set a branch filter manually.
+            if (_uiStates.FocusOnCurrentBranch)
+            {
+                _uiStates.FocusOnCurrentBranch = false;
+                OnPropertyChanged(nameof(FocusOnCurrentBranch));
+            }
+
             var isLocal = node.Path.StartsWith("refs/heads/", StringComparison.Ordinal);
             var tree = isLocal ? _localBranchTrees : _remoteBranchTrees;
 
@@ -1275,8 +1310,8 @@ namespace SourceGit.ViewModels
 
                 var currentUpstream = string.Empty;
                 var showFlags = Preferences.Instance.HistoryShowFlags;
-                if (showFlags.HasFlag(Models.HistoryShowFlags.CurrentBranchOnly))
-                    currentUpstream = await new Commands.QueryUpstreamOfHead(FullPath).GetResultAsync().ConfigureAwait(false);
+                if (_uiStates.FocusOnCurrentBranch || showFlags.HasFlag(Models.HistoryShowFlags.CurrentBranchOnly))
+                    currentUpstream = await new Commands.QueryUpstreamOfCurrentBranch(FullPath).GetResultAsync().ConfigureAwait(false);
 
                 var builder = new StringBuilder();
                 builder
