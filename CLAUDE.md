@@ -68,5 +68,8 @@ Branch `feature/vantv_dev` (compare with `git log master..feature/vantv_dev`):
 - **Embedded Git** (Windows): `ViewModels/EmbeddedGit.cs`, `Preferences > Git`. `System Git` skips the embedded copy when it is found in `PATH`.
 - **Add git to user PATH** (Windows): `Preferences > Git > User PATH` adds/removes the selected git's `cmd` folder in `HKCU\Environment\Path` (`Native/WindowsUserPath.cs`, keeps `REG_EXPAND_SZ`, broadcasts `WM_SETTINGCHANGE`), shows which `git.exe` new terminals resolve, and offers to replace the entry when the selected git changes.
 - **Hosting accounts**: `Preferences > Accounts`. Tokens are never stored by SourceGit; they go through the git credential helper via `Commands.Credential` (`git credential approve|reject|fill`, non-interactive). Accounts (metadata + optional SSH key) live in `Preferences.HostingAccounts`. `Use Browser` (GitHub) runs GCM's `github login --browser` so another account than the stored one can be added. `ViewModels.AccountSelector` binds an account to a remote (`credential.https://<host>.username` for HTTPS, `remote.<name>.sshkey` for SSH).
-- Open items / things to finish later are tracked in `KNOWN_ISSUES.md`.
-- Planned (not started) features have a plan in `docs/plans/` (e.g. `docs/plans/auto-update.md`: auto update from the fork's GitHub releases).
+- Fork docs live in `docs/` (index: `docs/README.md`):
+  - `docs/ai/todo.md` (work still to do / to verify by hand), `docs/ai/known-issues.md` (current limitations of fork features),
+    `docs/ai/tech-debt.md`, `docs/ai/lessons.md`, `docs/ai/decisions/NNN-*.md` (why each fork feature works the way it does).
+  - Planned (not started) features have a plan in `docs/plans/` (e.g. `docs/plans/auto-update.md`: auto update from the fork's GitHub releases).
+  - When adding/changing a fork feature: update its line above, add a decision if a choice was made, and record open items in `todo.md` / `known-issues.md`.
