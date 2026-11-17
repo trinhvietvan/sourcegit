@@ -263,7 +263,7 @@
             </ToolTip.Tip>
             <Path Width="14" Height="14" Data="{StaticResource Icons.Search}"/>
           </ToggleButton>
-          
+
           <Button Classes="icon_button"
                   Width="18" Height="18"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -272,6 +272,30 @@
             <Path Width="12" Height="12"
                   Data="{StaticResource Icons.Settings2}"/>
           </Button>
+
+          <Button Classes="icon_button"
+                  Width="18" Height="18"
+                  Margin="10,0,0,0"
+                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                  Click="OnNavigateToHead"
+                  ToolTip.Tip="{DynamicResource Text.Repository.NavigateToCurrentHead}">
+            <Path Width="13" Height="13"
+                  Data="{StaticResource Icons.Target}"/>
+          </Button>
+
+          <ToggleButton Classes="line_path"
+                        Width="18" Height="18"
+                        IsChecked="{Binding $parent[v:Repository].((vm:Repository)DataContext).FocusOnCurrentBranch, Mode=TwoWay, FallbackValue=False}"
+                        ToolTip.Tip="{DynamicResource Text.Repository.FocusOnCurrentBranch}">
+            <ToggleButton.Styles>
+              <Style Selector="ToolTip">
+                <Setter Property="MaxWidth" Value="400"/>
+              </Style>
+            </ToggleButton.Styles>
+
+            <Path Width="13" Height="13"
+                  Data="{StaticResource Icons.Magic}"/>
+          </ToggleButton>
         </StackPanel>
       </Border>
 

@@ -523,6 +523,17 @@ namespace SourceGit.Views
             _resizingAuthorColumn = false;
         }
 
+        private void OnNavigateToHead(object sender, RoutedEventArgs e)
+        {
+            var repoView = this.FindAncestorOfType<Repository>();
+            if (repoView is not { DataContext: ViewModels.Repository { CurrentBranch: { } head } repo })
+                return;
+
+            repoView.LocalBranchTree?.Select(head);
+            repo.NavigateToCommit(head.Head);
+            e.Handled = true;
+        }
+
         private void OnOpenAdvancedOptions(object sender, RoutedEventArgs e)
         {
             if (sender is not Button button)
